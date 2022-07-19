@@ -18,7 +18,7 @@ import re
 import tarfile
 
 ### DEFINING WORK DIR(SCRIPT'S LOCATION) ###
-work_dir = '/home/user/scripts/qualys-to-jira'
+work_dir = '/home/marchenm/scripts/python/qualys-to-jira'
 
 ###########################
 ##### LOGGING SECTION #####
@@ -32,7 +32,7 @@ if not path.isdir(logs_dir):
 
 app_log_name = logs_dir+'/qualys-to-jira_log_' + \
     str(today.strftime('%d-%m-%Y'))+'.log'
-logging.basicConfig(filename=app_log_name, filemode='w', level=logging.INFO,
+logging.basicConfig(filename=app_log_name, filemode='a', level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%d-%b-%Y %H:%M:%S')
 logging.info('SCRIPT WORK STARTED: QUALYS REPORT TO JIRA TICKET')
 logging.info('Script Starting Date&Time is: ' +
@@ -51,13 +51,18 @@ except Exception as error:
 ######################################################################
 ##### DEFINING ALL NECESSARRY FOLDERS/FILES & API URLS VARIABLES #####
 
+### LIST OF FOLDERS TO CREATE DIRS ###
+list_of_folders = []
+
 ### DEFINING ALL NECESSARRY FOLDERS ###
 qualys_files_dir = work_dir+'/qualys_files'
-qualys_reports = qualys_files_dir+'/reports'
-jira_files_dir = work_dir+'/jira_files'
+list_of_folders.append(qualys_files_dir)
 
-### LIST OF FOLDERS TO CREATE ###
-list_of_folders = [qualys_files_dir, qualys_reports, jira_files_dir]
+qualys_reports = qualys_files_dir+'/reports'
+list_of_folders.append(qualys_reports)
+
+jira_files_dir = work_dir+'/jira_files'
+list_of_folders.append((jira_files_dir))
 
 ### DEFINING FILES VARIABLES ###
 qualys_reports_list = qualys_files_dir+'/qualys-reports-list.xml'
@@ -83,6 +88,9 @@ jira_query_headers = {
     'Content-Type': 'application/json'
 }
 
+jira_tasks_count = 0
+jira_subtasks_count = 0
+
 #####################
 ##### FUNCTIONS #####
 
@@ -105,7 +113,7 @@ def files_rotate(path_to_rotate, num_of_files_to_keep):
 
 def count_script_job_time():
     end_date = datetime.now()
-    logging.info('Estimated time is: ' + str(end_date - today))
+    logging.info('Estimated time is: ' + str(end_date - today) + '\n-----\n')
     exit()
 
 #############################
@@ -341,15 +349,16 @@ for ind in df.index:
                 insert_data = dumps(temp_data, indent=4)
                 writer.write(insert_data)
                 writer.close()
-                ### SEND JSON QUERY TO JIRA API ###
-                logging.info('Sending JSON data to Jira API...')
+                ### SEND JSON QUERY(TASK) TO JIRA API ###
+                logging.info('Sending JSON data(TASK) to Jira API...')
                 try:
                     jira_api_request = requests.post(jira_api_url, data=open(jira_query_file, 'rb'), headers=jira_query_headers)
                 except Exception as error:
-                    logging.exception('FAILURE: failed to send JSON data to Jira API, exiting...')
+                    logging.exception('FAILURE: failed to send JSON data(TASK) to Jira API, exiting...')
                     exit()
                 if jira_api_request.status_code == 201:
-                    logging.info('Sending JSON data to Jira API - DONE!')
+                    logging.info('Sending JSON data(TASK) to Jira API - DONE!')
+                    jira_tasks_count += 1
                     logging.info('Sleeping for 1 seconds before next POST...')
                     ### DEFINING PARENT TASK NAME ###
                     task_parent_key = re.findall('.*,"key":"(.*)",.*$', jira_api_request.text)[0]
@@ -410,15 +419,16 @@ for ind in df.index:
             insert_data = dumps(temp_data, indent=4)
             writer.write(insert_data)
             writer.close()
-            ### SEND JSON QUERY TO JIRA API ###
-            logging.info('Sending JSON data to Jira API...')
+            ### SEND JSON QUERY(SUB-TASK) TO JIRA API ###
+            logging.info('Sending JSON data(SUB-TASK) to Jira API...')
             try:
                 jira_api_request = requests.post(jira_api_url, data=open(jira_query_file, 'rb'), headers=jira_query_headers)
             except Exception as error:
-                logging.exception('FAILURE: failed to send JSON data to Jira API, exiting...')
+                logging.exception('FAILURE: failed to send JSON data(SUB-TASK) to Jira API, exiting...')
                 exit()
             if jira_api_request.status_code == 201:
-                logging.info('Sending JSON data to Jira API - DONE!')
+                logging.info('Sending JSON data(SUB-TASK) to Jira API - DONE!')
+                jira_subtasks_count += 1
                 logging.info('Sleeping for 1 seconds before next request...')
                 sleep(1)
             else:
@@ -461,8 +471,9 @@ try:
     remove(qualys_report_ready)
     logging.info('Removing  unarchived qualys report...')
     remove(qualys_report)
-    logging.info('Removing temporary Jira query...')
-    remove(jira_query_file)
+    if jira_tasks_count != 0:
+        logging.info('Removing temporary Jira query...')
+        remove(jira_query_file)
     #logging.info('Removing temporary Qualys reports list...')
     #remove(qualys_reports_list)
 except Exception as error:
@@ -487,4 +498,9 @@ logging.info('Finished Files Rotation\n')
 logging.info('DONE: POST JOBS\n')
 
 logging.info('SCRIPT WORK DONE: QUALYS REPORT TO JIRA TICKET')
+if jira_tasks_count == 0:
+    logging.warning('NO JIRA TASKS CREATED: Qualys report might be empty!')
+else:
+    logging.info('Jira TASKS created: ' + str(jira_tasks_count))
+    logging.info('Jira SUB-TASKS created: ' + str(jira_subtasks_count))
 count_script_job_time()
