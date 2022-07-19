@@ -309,6 +309,12 @@ cvss_base_pattern = '(\d+)\.'
 
 ### QUALYS IPS LIST TO CHECK TASK/SUB-TASK ###
 jira_tasks_ips = []
+jira_task_keys = []
+jira_task_key_pattern = '^.*"key":"(.*)",.*$'
+'''
+b'{"id":"46475","key":"QUAL-2919","self":"https://jira.bcc.kz/rest/api/2/issue/46475"}' 
+b'{"id":"46476","key":"QUAL-2920","self":"https://jira.bcc.kz/rest/api/2/issue/46476"}'
+'''
 
 for ind in df.index:
     if str(df['CVSS Base'][ind]) == 'nan':
@@ -359,6 +365,10 @@ for ind in df.index:
                 if jira_api_request.status_code == 201:
                     logging.info('Sending JSON data(TASK) to Jira API - DONE!')
                     jira_tasks_count += 1
+                    jira_task_keys.append(re.findall(jira_task_key_pattern, jira_api_request.content)[0])
+                    # DEBUG
+                    #logging.info(jira_api_request.content)
+                    # END DEBUG
                     logging.info('Sleeping for 1 seconds before next POST...')
                     ### DEFINING PARENT TASK NAME ###
                     task_parent_key = re.findall('.*,"key":"(.*)",.*$', jira_api_request.text)[0]
@@ -429,6 +439,10 @@ for ind in df.index:
             if jira_api_request.status_code == 201:
                 logging.info('Sending JSON data(SUB-TASK) to Jira API - DONE!')
                 jira_subtasks_count += 1
+                jira_task_keys.append(re.findall(jira_task_key_pattern, jira_api_request.content)[0])
+                # DEBUG
+                #logging.info(jira_api_request.content)
+                # END DEBUG
                 logging.info('Sleeping for 1 seconds before next request...')
                 sleep(1)
             else:
@@ -503,4 +517,5 @@ if jira_tasks_count == 0:
 else:
     logging.info('Jira TASKS created: ' + str(jira_tasks_count))
     logging.info('Jira SUB-TASKS created: ' + str(jira_subtasks_count))
+    logging.info(print(*jira_task_keys, sep='\n'))
 count_script_job_time()
