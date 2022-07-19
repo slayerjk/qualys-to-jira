@@ -365,7 +365,7 @@ for ind in df.index:
                 if jira_api_request.status_code == 201:
                     logging.info('Sending JSON data(TASK) to Jira API - DONE!')
                     jira_tasks_count += 1
-                    jira_task_keys.append(re.findall(jira_task_key_pattern, jira_api_request.content)[0])
+                    jira_task_keys.append(f'TASK: {re.findall(jira_task_key_pattern, jira_api_request.content)[0]}')
                     # DEBUG
                     #logging.info(jira_api_request.content)
                     # END DEBUG
@@ -439,7 +439,7 @@ for ind in df.index:
             if jira_api_request.status_code == 201:
                 logging.info('Sending JSON data(SUB-TASK) to Jira API - DONE!')
                 jira_subtasks_count += 1
-                jira_task_keys.append(re.findall(jira_task_key_pattern, jira_api_request.content)[0])
+                jira_task_keys.append(f'SUB-TASK: {re.findall(jira_task_key_pattern, jira_api_request.content)[0]}')
                 # DEBUG
                 #logging.info(jira_api_request.content)
                 # END DEBUG
@@ -517,5 +517,6 @@ if jira_tasks_count == 0:
 else:
     logging.info('Jira TASKS created: ' + str(jira_tasks_count))
     logging.info('Jira SUB-TASKS created: ' + str(jira_subtasks_count))
+    logging.info('LIST of Jira task/sub-task keys created:\n-----')
     logging.info(print(*jira_task_keys, sep='\n'))
 count_script_job_time()
