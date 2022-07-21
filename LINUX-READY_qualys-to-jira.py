@@ -113,7 +113,7 @@ def files_rotate(path_to_rotate, num_of_files_to_keep):
 
 def count_script_job_time():
     end_date = datetime.now()
-    logging.info('Estimated time is: ' + str(end_date - today) + '\n-----\n')
+    logging.info('\nEstimated time is: ' + str(end_date - today) + '\n##########\n')
     exit()
 
 #############################
@@ -309,6 +309,7 @@ cvss_base_pattern = '(\d+)\.'
 
 ### QUALYS IPS LIST TO CHECK TASK/SUB-TASK ###
 jira_tasks_ips = []
+### JIRA TASK KEYS LIST AND REGEXP PATTERN ###
 jira_task_keys = []
 jira_task_key_pattern = '^.*"key":"(.*)",.*$'
 '''
@@ -365,10 +366,8 @@ for ind in df.index:
                 if jira_api_request.status_code == 201:
                     logging.info('Sending JSON data(TASK) to Jira API - DONE!')
                     jira_tasks_count += 1
-                    jira_task_keys.append(f'TASK: {re.findall(jira_task_key_pattern, jira_api_request.content)[0]}')
-                    # DEBUG
-                    #logging.info(jira_api_request.content)
-                    # END DEBUG
+                    logging.info(jira_api_request.text)
+                    jira_task_keys.append(f'TASK: {re.findall(jira_task_key_pattern, jira_api_request.text)[0]}')
                     logging.info('Sleeping for 1 seconds before next POST...')
                     ### DEFINING PARENT TASK NAME ###
                     task_parent_key = re.findall('.*,"key":"(.*)",.*$', jira_api_request.text)[0]
@@ -409,11 +408,11 @@ for ind in df.index:
             if int(re.findall(cvss_base_pattern, CVSS_Base)[0]) >= 8:
                 temp_data['fields']['priority']['name'] = 'Highest'
                 temp_data['fields']['duedate'] = str(
-                    jira_date_format + timedelta(days=+90))
+                    jira_date_format + timedelta(days=+15))
             elif int(re.findall(cvss_base_pattern, CVSS_Base)[0]) >= 6:
                 temp_data['fields']['priority']['name'] = 'High'
                 temp_data['fields']['duedate'] = str(
-                    jira_date_format + timedelta(days=+60))
+                    jira_date_format + timedelta(days=+30))
             elif int(re.findall(cvss_base_pattern, CVSS_Base)[0]) >= 4:
                 temp_data['fields']['priority']['name'] = 'Medium'
                 temp_data['fields']['duedate'] = str(
@@ -421,11 +420,11 @@ for ind in df.index:
             elif int(re.findall(cvss_base_pattern, CVSS_Base)[0]) >= 2:
                 temp_data['fields']['priority']['name'] = 'Low'
                 temp_data['fields']['duedate'] = str(
-                    jira_date_format + timedelta(days=+30))
+                    jira_date_format + timedelta(days=+60))
             elif int(re.findall(cvss_base_pattern, CVSS_Base)[0]) >= 1:
                 temp_data['fields']['priority']['name'] = 'Lowest'
                 temp_data['fields']['duedate'] = str(
-                    jira_date_format + timedelta(days=+15))
+                    jira_date_format + timedelta(days=+90))
             insert_data = dumps(temp_data, indent=4)
             writer.write(insert_data)
             writer.close()
@@ -439,10 +438,8 @@ for ind in df.index:
             if jira_api_request.status_code == 201:
                 logging.info('Sending JSON data(SUB-TASK) to Jira API - DONE!')
                 jira_subtasks_count += 1
-                jira_task_keys.append(f'SUB-TASK: {re.findall(jira_task_key_pattern, jira_api_request.content)[0]}')
-                # DEBUG
-                #logging.info(jira_api_request.content)
-                # END DEBUG
+                logging.info(str(jira_api_request.text))
+                jira_task_keys.append(f'SUB-TASK: {re.findall(jira_task_key_pattern, jira_api_request.text)[0]}')
                 logging.info('Sleeping for 1 seconds before next request...')
                 sleep(1)
             else:
@@ -518,5 +515,7 @@ else:
     logging.info('Jira TASKS created: ' + str(jira_tasks_count))
     logging.info('Jira SUB-TASKS created: ' + str(jira_subtasks_count))
     logging.info('LIST of Jira task/sub-task keys created:\n-----')
-    logging.info(print(*jira_task_keys, sep='\n'))
+    ### PRINT ALL CREATED JIRA TASKS
+    for task in jira_task_keys:
+        logging.info(task)
 count_script_job_time()
