@@ -82,7 +82,7 @@ qualys_api_url = '/api/2.0/fo/report/'
 jira_api_url = 'https://jira.bcc.kz/rest/api/2/issue/'
 
 jira_query_headers = {
-    'Authorization': 'Basic cXVhbHlzOkMxI2Q5czRITDJyQw==',
+    'Authorization': 'Basic <your-base64-user-pass>',
     'X-Requested-With': 'qualys-to-jira-script',
     'Accept': 'application/json',
     'Content-Type': 'application/json'
