@@ -18,7 +18,7 @@ import re
 import tarfile
 
 ### DEFINING WORK DIR(SCRIPT'S LOCATION) ###
-work_dir = '/home/marchenm/scripts/python/qualys-to-jira'
+work_dir = '<your-work-dir-absolute-path>'
 
 ###########################
 ##### LOGGING SECTION #####
