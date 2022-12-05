@@ -16,9 +16,13 @@ from xml.etree.ElementTree import parse
 from json import loads, dumps
 import re
 import tarfile
+from smtplib import SMTP
 
 ### DEFINING WORK DIR(SCRIPT'S LOCATION) ###
-work_dir = '<your-work-dir-absolute-path>'
+work_dir = '<your-absolute-path>'
+
+### SCRIPT APPNAME(FOR SEND MAIL FUNCTION & ETC)
+appname = 'qualys-to-jira'
 
 ###########################
 ##### LOGGING SECTION #####
@@ -30,8 +34,7 @@ logs_dir = work_dir+'/logs'
 if not path.isdir(logs_dir):
     mkdir(logs_dir)
 
-app_log_name = logs_dir+'/qualys-to-jira_log_' + \
-    str(today.strftime('%d-%m-%Y'))+'.log'
+app_log_name = f'{logs_dir}/{appname}_log_{str(today.strftime("%d-%m-%Y"))}.log'
 logging.basicConfig(filename=app_log_name, filemode='a', level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%d-%b-%Y %H:%M:%S')
 logging.info('SCRIPT WORK STARTED: QUALYS REPORT TO JIRA TICKET')
@@ -80,7 +83,8 @@ qualys_api_url = '/api/2.0/fo/report/'
 
 ### JIRA API DATA ###
 jira_api_url = 'https://jira.bcc.kz/rest/api/2/issue/'
-jira_coded_creds = '<your_jira_base64_creds(user:pass)>'
+jira_coded_creds = '<JIRA-BASE64-CREDS>'
+
 jira_query_headers = {
     'Authorization': 'Basic '+jira_coded_creds,
     'X-Requested-With': 'qualys-to-jira-script',
@@ -90,6 +94,16 @@ jira_query_headers = {
 
 jira_tasks_count = 0
 jira_subtasks_count = 0
+
+### SMTP DATA(WITHOUT AUTH) ###
+'''
+Email report
+'''
+send_mail_option = 'yes'
+smtp_server = '<your-smtp-server>'
+from_addr = f'{appnanme}@bcc.kz'
+to_addr_list = ['admin@EX.COM']
+smtp_port = 25
 
 #####################
 ##### FUNCTIONS #####
@@ -114,7 +128,28 @@ def files_rotate(path_to_rotate, num_of_files_to_keep):
 def count_script_job_time():
     end_date = datetime.now()
     logging.info('\nEstimated time is: ' + str(end_date - today) + '\n##########\n')
-    exit()
+
+### EMAIL REPORT ###
+'''
+To send email report at.
+By default, at the end of the script only.
+'''
+def send_mail_report():
+    if send_mail_option == 'yes':
+        logging.info('START: sending error report')
+        subj = appname+' Script Error Occured'
+        with open(app_log_name, 'r') as log:
+            msg = log.read()
+        try:
+            with SMTP(smtp_server, smtp_port) as send_mail:
+                send_mail.ehlo()
+                send_mail.sendmail(from_addr=from_addr, to_addrs=to_addr_list, msg=f'subject: {subj}({today})\n\n{today}:\n{msg}')
+                send_mail.quit()
+                logging.info('DONE: sending error report\n')
+        except Exception as e:
+            logging.warning('FAILED: sending error report, moving on...\n')
+    else:
+        logging.warning('Email report was not set, skipping')
 
 #############################
 ##### PRE-START ACTIONS #####
@@ -124,10 +159,12 @@ logging.info('STARTED: PRE-START ACTIONS')
 ### CHECKING JIRA TEMPLATES EXISTS ###
 if not path.isfile(jira_query_task_template):
     logging.exception('FAILURE: Jira query Task template NOT FOUND, exiting...')
+    send_mail_report()
     exit()
 
 if not path.isfile(jira_query_subtask_template):
     logging.exception('FAILURE: Jira query Sub-Task template NOT FOUND, exiting...')
+    send_mail_report()
     exit()
 
 ### CREATING ALL NECESSARRY FOLDERS ###
@@ -149,6 +186,7 @@ try:
     qualys_request_get_reports_list = connect(qualys_creds)
 except Exception as error:
     logging.exception('FAILURE: Failed to GET Qualys reports list, exiting...')
+    send_mail_report()
     exit()
 
 ### QUALYS GET REPORT LIST API PARAMS ###
@@ -165,6 +203,7 @@ try:
         logging.info('GET Qualys Report List - DONE!')
 except Exception as error:
     logging.exception('FAILURE: Failed to GET Qualys reports list, exiting...')
+    send_mail_report()
     exit()
 
 logging.info('DONE: GET QUALYS REPORTS LIST\n')
@@ -189,6 +228,7 @@ try:
             break
 except Exception as error:
     logging.exception('FAILURE: Failed Parsing Qualys Reports List, exiting...')
+    send_mail_report()
     exit()
 
 logging.info('Checking Last CSV Report id has been processed...')
@@ -220,6 +260,7 @@ try:
 except Exception as error:
     logging.exception(
         'FAILURE: Failed to check if Last CSV Report id has been processed, exiting...')
+    send_mail_report()
     exit()
 
 if rep_id_new == 'no':
@@ -231,6 +272,7 @@ if rep_id_new == 'no':
         logging.exception('FAILURE: failed to rotate logs')
     logging.info('Finished log rotation\n')
     logging.info('SCRIPT WORK DONE: QUALYS REPORT TO JIRA TICKET')
+    send_mail_report()
     exit()
 
 logging.info('DONE: PARSE QUALYS REPORTS LIST, CHECK IF EXISTS IN PROCESSESD RERPORTS LIST\n')
@@ -244,6 +286,7 @@ try:
     qualys_request_get_report = connect(qualys_creds)
 except Exception as error:
     logging.exception('FAILURE: Failed to GET Qualys CSV Report, exiting...')
+    send_mail_report()
     exit()
 
 ### QUALYS GET REPORT ID API PARAMS ###
@@ -268,6 +311,7 @@ try:
 except Exception as error:
     logging.exception(
         'FAILURE: Failed to GET/Save Qualys CSV Report Data, exiting')
+    send_mail_report()
     exit()
 
 logging.info('DONE: GETTING NEW REPORT ID AND SAVING TO CSV\n')
@@ -284,6 +328,7 @@ try:
 except Exception as error:
     logging.exception(
         'FAILURE: Failed to format downloaded CSV report, exiting...')
+    send_mail_report()
     exit()
 logging.info('Writing downloaded CSV report modification')
 try:
@@ -291,6 +336,7 @@ try:
 except Exception as error:
     logging.exception(
         'FAILURE: Failed Writing downloaded CSV report modification, exiting...')
+    send_mail_report()
     exit()
 
 logging.info('DONE: MODIFY CSV TO PARSE\n')
@@ -362,6 +408,7 @@ for ind in df.index:
                     jira_api_request = requests.post(jira_api_url, data=open(jira_query_file, 'rb'), headers=jira_query_headers)
                 except Exception as error:
                     logging.exception('FAILURE: failed to send JSON data(TASK) to Jira API, exiting...')
+                    send_mail_report()
                     exit()
                 if jira_api_request.status_code == 201:
                     logging.info('Sending JSON data(TASK) to Jira API - DONE!')
@@ -375,10 +422,12 @@ for ind in df.index:
                 else:
                     logging.warning('Something wrong, check this status code: ' + str(jira_api_request.status_code))
                     logging.warning(jira_api_request.text)
+                    send_mail_report()
                     exit()
         except Exception as error:
             logging.exception(
                 'FAILURE: Failed to encapsulate modified CSV report data to JIRA query, exiting...')
+            send_mail_report()
             exit()
     ### CHECKING: CREATE SUBTASK ###
     logging.info('Starting to encapsulate CSV report data to JIRA SUB-TASK query...')
@@ -434,6 +483,7 @@ for ind in df.index:
                 jira_api_request = requests.post(jira_api_url, data=open(jira_query_file, 'rb'), headers=jira_query_headers)
             except Exception as error:
                 logging.exception('FAILURE: failed to send JSON data(SUB-TASK) to Jira API, exiting...')
+                send_mail_report()
                 exit()
             if jira_api_request.status_code == 201:
                 logging.info('Sending JSON data(SUB-TASK) to Jira API - DONE!')
@@ -445,10 +495,12 @@ for ind in df.index:
             else:
                 logging.warning('Something wrong, check this status code: ' + str(jira_api_request.status_code))
                 logging.warning(jira_api_request.text)
+                send_mail_report()
                 exit()
     except Exception as error:
         logging.exception(
             'FAILURE: Failed to encapsulate modified CSV report data to JIRA query, exiting...')
+        send_mail_report()
         exit()
 
 logging.info('DONE: PARSE CSV & ADD VALUES TO JIRA JSON TEMPLATE AND SEND IT TO JIRA\n')
@@ -466,6 +518,7 @@ try:
 except Exception as error:
     logging.exception(
         'FAILURE: failed to Write Last CSV Report ID to processed reports list, exiting...')
+    send_mail_report()
     exit()
 
 logging.info('Archiving(tar.gz) downloaded qualys report..')
@@ -519,3 +572,4 @@ else:
     for task in jira_task_keys:
         logging.info(task)
 count_script_job_time()
+send_mail_report()
