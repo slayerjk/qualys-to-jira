@@ -18,6 +18,7 @@ Python modules required:
   * tarfile
   * qualysapi
   * pandas
+  * smtplib
 
 ====Script workflow====
 
@@ -37,6 +38,7 @@ Python modules required:
   - encapsulate data of each rows in Jira query(**JSON**) using Jira **SUB-TASK** query template;
   - **POST** this data to Jira via API(**create new sub-task**) ;
   - Reporter name both for Task and Subtask will be your Jira API user.
+  - Send email report(log) as option.
 
 
 ====Qualys Creds File====
