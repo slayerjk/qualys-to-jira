@@ -17,6 +17,7 @@ from json import loads, dumps
 import re
 import tarfile
 from smtplib import SMTP
+from tempfile import TemporaryFile
 
 ### DEFINING WORK DIR(SCRIPT'S LOCATION) ###
 work_dir = '<your-absolute-path>'
@@ -83,7 +84,7 @@ qualys_api_url = '/api/2.0/fo/report/'
 
 ### JIRA API DATA ###
 jira_api_url = 'https://jira.bcc.kz/rest/api/2/issue/'
-jira_coded_creds = '<YOUR_JIRA_BASE64_CREDS>'
+jira_coded_creds = '<YOUR_JIRA_BASE64_CREDS - ACCOUNT:PASSWORD>'
 
 jira_query_headers = {
     'Authorization': 'Basic '+jira_coded_creds,
@@ -94,6 +95,7 @@ jira_query_headers = {
 
 jira_tasks_count = 0
 jira_subtasks_count = 0
+jira_tasks_final_temp = TemporaryFile('w+t')
 
 ### SMTP DATA(WITHOUT AUTH) ###
 '''
@@ -101,8 +103,9 @@ Email report
 '''
 send_mail_option = 'yes'
 smtp_server = '<YOUR_SMTP_SERVER>'
-from_addr = f'{appname}@ex.comk'
-to_addr_list = ['admin@ex.com']
+from_addr = f'{appname}@EX.COM'
+to_addr_list_users = ['USER@EX.COM']
+to_addr_list_admins = ['ADMIN@EX.COM']
 smtp_port = 25
 
 #####################
@@ -138,26 +141,37 @@ def send_mail_report(type):
     if send_mail_option == 'yes':
         if type == 'error':
             logging.info('START: sending email error report')
-            subj = appname+' Script Error Occured'
-        else:
+            subj = f'{appname} - script error occured'
+            rcpt_to = to_addr_list_admins
+            with open(app_log_name, 'r') as log:
+                body = log.read()
+        elif type == 'tasks':
+            logging.info('START: sending jira tasks final report')
+            subj = f'{appname} - jira tasks final report'
+            rcpt_to = to_addr_list_users
+            body = jira_tasks_final_temp.read()
+        elif type == 'report':
             logging.info('START: sending email final report')
-            subj = appname+' Script Final Report'
-        with open(app_log_name, 'r') as log:
-            msg = log.read()
+            subj = f'{appname} - script final report'
+            rcpt_to = to_addr_list_admins
+            with open(app_log_name, 'r') as log:
+                body = log.read()
         try:
             with SMTP(smtp_server, smtp_port) as send_mail:
                 send_mail.ehlo()
-                send_mail.sendmail(from_addr=from_addr, to_addrs=to_addr_list, msg=f'subject: {subj}({today})\n\n{today}:\n{msg}')
+                send_mail.sendmail(from_addr=from_addr, to_addrs=rcpt_to, msg=f'subject: {subj}({today})\n\n{today}:\n{body}')
                 send_mail.quit()
                 if type == 'error':
                     logging.info('DONE: sending email error report\n')
+                elif type == 'tasks':
+                    logging.info('DONE: jira tasks final report\n')
                 else:
                     logging.info('DONE: sending email final report\n')
         except Exception as e:
             if type == 'error':
-                logging.warning('FAILED: sending email error report, moving on...\n')
+                logging.exception('FAILED: sending email error report, moving on...\n')
             else:
-                logging.warning('FAILED: sending email final report, moving on...\n')
+                logging.exception('FAILED: sending email final report, moving on...\n')
 
 #############################
 ##### PRE-START ACTIONS #####
@@ -280,7 +294,7 @@ if rep_id_new == 'no':
         logging.exception('FAILURE: failed to rotate logs')
     logging.info('Finished log rotation\n')
     logging.info('SCRIPT WORK DONE: QUALYS REPORT TO JIRA TICKET')
-    send_mail_report('error')
+    send_mail_report('report')
     exit()
 
 logging.info('DONE: PARSE QUALYS REPORTS LIST, CHECK IF EXISTS IN PROCESSESD RERPORTS LIST\n')
@@ -327,23 +341,34 @@ logging.info('DONE: GETTING NEW REPORT ID AND SAVING TO CSV\n')
 #######################################
 ##### MODULE: MODIFY CSV TO PARSE #####
 
-logging.info('STARTED: MODIFY CSV TO PARSE')
+### SEARCH ASSIGNEE FOR JIRA TEMPLATES
+logging.info('STARTED: searching jira assignee from qualys report')
+jira_assignee_pattern = 'Assignee_(\w+)_'
+
+with open(qualys_report, 'r', encoding='utf-8') as report:
+    try:
+        jira_assignee = str(re.findall(jira_assignee_pattern, report.read())[0]).upper()
+    except IndexError as e:
+        logging.exception('FAILURE: searching jira assignee from qualys report, exiting')
+        send_mail_report('error')
+        exit()
+logging.info('DONE: searching jira assignee from qualys report')
+logging.info(f'Jira assignee is: {jira_assignee}\n')
 
 ### DEL SKIPROWS=10 WILL SKIP THE FIRST 10 LINES(HEADER) AND TRY TO READ FROM 11 LINE ###
-#logging.info('Deleting first 10 rows...')
+logging.info('STARTED: trying delete first 10 rows of csv header...')
 try:
     df = read_csv(qualys_report, index_col='IP', skiprows=10)
 except Exception as error:
-    logging.exception(
-        'FAILURE: Failed to format downloaded CSV report, exiting...')
+    logging.exception('FAILURE: trying delete first 10 rows of csv header, exiting...')
     send_mail_report('error')
     exit()
-logging.info('Writing downloaded CSV report modification')
+logging.info('STARTED: Writing downloaded CSV report modification')
 try:
     df.to_csv(qualys_report_ready)
 except Exception as error:
     logging.exception(
-        'FAILURE: Failed Writing downloaded CSV report modification, exiting...')
+        'FAILURE: Writing downloaded CSV report modification, exiting...')
     send_mail_report('error')
     exit()
 
@@ -401,6 +426,7 @@ for ind in df.index:
             with open(jira_query_task_template, 'r', encoding='utf_8_sig') as reader, open(jira_query_file, 'w', encoding='utf_8_sig') as writer:
                 temp_data = loads(reader.read())
                 temp_data['fields']['summary'] = IP + ' - ' + DNS
+                temp_data['fields']['assignee']['name'] = jira_assignee
                 ### 'CUSTOMFIELD_10200' STANDS FOR START DATE ###
                 temp_data['fields']['customfield_10200'] = str(jira_date_format)
                 temp_data['fields']['description'] = Associated_AGs
@@ -429,7 +455,7 @@ for ind in df.index:
                     sleep(1)
                 else:
                     logging.warning('Something wrong, check this status code: ' + str(jira_api_request.status_code))
-                    logging.warning(jira_api_request.text)
+                    #logging.warning(jira_api_request.text)
                     send_mail_report('error')
                     exit()
         except Exception as error:
@@ -444,6 +470,7 @@ for ind in df.index:
             temp_data = loads(reader.read())
             temp_data['fields']['parent']['key'] = task_parent_key
             temp_data['fields']['summary'] = Title
+            temp_data['fields']['assignee']['name'] = jira_assignee
             temp_data['fields']['description'] = Threat
             temp_data['fields']['customfield_11616'] = OS
             temp_data['fields']['customfield_11612'] = QID
@@ -502,7 +529,7 @@ for ind in df.index:
                 sleep(1)
             else:
                 logging.warning('Something wrong, check this status code: ' + str(jira_api_request.status_code))
-                logging.warning(jira_api_request.text)
+                #logging.warning(jira_api_request.text)
                 send_mail_report('error')
                 exit()
     except Exception as error:
@@ -579,5 +606,9 @@ else:
     ### PRINT ALL CREATED JIRA TASKS
     for task in jira_task_keys:
         logging.info(task)
+        jira_tasks_final_temp.write(str(task)+'\n')
+    jira_tasks_final_temp.seek(0)
+    send_mail_report('tasks')
+
 count_script_job_time()
-send_mail_report()
+send_mail_report('report')
