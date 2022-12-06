@@ -83,7 +83,7 @@ qualys_creds = qualys_files_dir+'/qualys-creds.txt'
 qualys_api_url = '/api/2.0/fo/report/'
 
 ### JIRA API DATA ###
-jira_api_url = 'https://jira.bcc.kz/rest/api/2/issue/'
+jira_api_url = 'https://<YOUR_JIRA_DOAIN>/rest/api/2/issue/'
 jira_coded_creds = '<YOUR_JIRA_BASE64_CREDS - ACCOUNT:PASSWORD>'
 
 jira_query_headers = {
