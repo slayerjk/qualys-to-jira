@@ -67,20 +67,17 @@ proxy_port = 8080
 ; proxy authentication
 #proxy_username = <your-user>
 #proxy_password = <your-pass>
-</code>
+```
 
 ====Jira JSON TASK Template====
 
-<WRAP center round important 100%>
 Check carefully these fields: **customfield_10200**, **customfield_11024**.
 
 Most likely you don't have these fields in your Jira(but I do).
 
 You'll have to change script body accordingly!
-</WRAP>
 
-
-<code | download>
+```
 {
     "fields": {
         "project": {
@@ -92,6 +89,9 @@ You'll have to change script body accordingly!
         "summary": "<QUALYS REPORT COLUMNS IP + DNS - MUST BE EMPTY>",
         "assignee": {
             "name": "<YOUR DEFAULT ASSIGNEE>"
+        },
+        "reporter": {
+            "name": "<YOUR-JIRA-USER-FOR-API>"
         },
         "customfield_10200": "<START DATE CUSTOM FIELD(SCRIPT START DATE) - MUST BE EMPTY>",
         "duedate": "<COUNTED BY SCRIPT - MUST BE EMPTY>",
@@ -132,20 +132,23 @@ You'll have to change script body accordingly!
         "assignee": {
             "name": "<YOUR DEFAULT ASSIGNEE>"
         },
-		"customfield_11610": "<QUALYS REPORT COLUMN DNS - MUST BE EMPTY>",
-		"customfield_11616": "<QUALYS REPORT COLUMN OS - MUST BE EMPTY>",
-		"customfield_11612": "<QUALYS REPORT COLUMN QID - MUST BE EMPTY>",
-		"customfield_11617": "<QUALYS REPORT COLUMN Vuln Status - MUST BE EMPTY>",
-		"customfield_11615": "<QUALYS REPORT COLUMN Severity - MUST BE EMPTY>",
-		"customfield_11618": "<QUALYS REPORT COLUMN Port - MUST BE EMPTY>",
-		"customfield_11619": "<QUALYS REPORT COLUMN First Detected - MUST BE EMPTY>",
-		"customfield_11620": "<QUALYS REPORT COLUMN Last Detected - MUST BE EMPTY>",
-		"customfield_11621": "<QUALYS REPORT COLUMN CVE ID - MUST BE EMPTY>",
-		"customfield_11622": "<QUALYS REPORT COLUMN CVSS Base - MUST BE EMPTY>",
-		"customfield_11624": "<QUALYS REPORT COLUMN Impact - MUST BE EMPTY>",
-		"customfield_11625": "<QUALYS REPORT COLUMN Solution - MUST BE EMPTY>",
-		"customfield_11626": "<QUALYS REPORT COLUMN Results - MUST BE EMPTY>",
-		"customfield_11627": "<QUALYS REPORT COLUMN PCI Vuln - MUST BE EMPTY>",
+        "reporter": {
+            "name": "<YOUR-JIRA-USER-FOR-API>"
+        },
+	"customfield_11610": "<QUALYS REPORT COLUMN DNS - MUST BE EMPTY>",
+	"customfield_11616": "<QUALYS REPORT COLUMN OS - MUST BE EMPTY>",
+	"customfield_11612": "<QUALYS REPORT COLUMN QID - MUST BE EMPTY>",
+	"customfield_11617": "<QUALYS REPORT COLUMN Vuln Status - MUST BE EMPTY>",
+	"customfield_11615": "<QUALYS REPORT COLUMN Severity - MUST BE EMPTY>",
+	"customfield_11618": "<QUALYS REPORT COLUMN Port - MUST BE EMPTY>",
+	"customfield_11619": "<QUALYS REPORT COLUMN First Detected - MUST BE EMPTY>",
+	"customfield_11620": "<QUALYS REPORT COLUMN Last Detected - MUST BE EMPTY>",
+	"customfield_11621": "<QUALYS REPORT COLUMN CVE ID - MUST BE EMPTY>",
+	"customfield_11622": "<QUALYS REPORT COLUMN CVSS Base - MUST BE EMPTY>",
+	"customfield_11624": "<QUALYS REPORT COLUMN Impact - MUST BE EMPTY>",
+	"customfield_11625": "<QUALYS REPORT COLUMN Solution - MUST BE EMPTY>",
+	"customfield_11626": "<QUALYS REPORT COLUMN Results - MUST BE EMPTY>",
+	"customfield_11627": "<QUALYS REPORT COLUMN PCI Vuln - MUST BE EMPTY>",
         "customfield_10200": "<START DATE CUSTOM FIELD(SCRIPT START DATE) - MUST BE EMPTY>",
         "duedate": "<COUNTED BY SCRIPT - MUST BE EMPTY>",
         "description": "<QUALYS REPORT COLUMN Threat - MUST BE EMPTY>",
