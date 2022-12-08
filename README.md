@@ -16,29 +16,33 @@ Python modules required:
   * json
   * re
   * tarfile
+  * tempfile
+  * smtplib
+  * email.mime.multipart
+  * emial.mime.text
   * qualysapi
   * pandas
-  * smtplib
 
 ====Script workflow====
 
   - **GET** Qualys reports list(**XML**) via Qualys API;
-  - lookup for the very recent CSV(**OUTPUT_FORMAT**) report ID, with Title(**TITLE**) started with '**JIRA_**';
-  - compare this ID with recently processed ID's list, if there is no such ID -> process; else -> stop script;
-  - **GET** the Report ID via Qualys API(CSV);
-  - truncate the Report header(**first 10 rows**);
-  - parse this report for column names: **'['IP', 'DNS', 'OS', 'QID', 'Title', 'Vuln Status', 'Severity', 'Port', 'First Detected', 'Last Detected', 'CVE ID', 'CVSS Base', 'Threat', 'Impact', 'Solution', 'Results', 'PCI Vuln', 'Associated AGs']'**;
-  - if '**CVSS Base**' is empty('**nan**') -> skip this row;
-  - create parent Task using IP, DNS; 
-  - duedate is set + timedelta(days=+90 from script running date), priority = Higest; .
-  - encapsulate data of each rows in Jira query(**JSON**) using Jira **TASK** query template;
-  - **POST** this data to Jira via API(**create new task**) ; parse Jira Task key from request;
-  - then create Sub-Task using Task key as Parent; 
-  - If CVSS_Base >= 8 duedate +90 from script running date) priority Higest; CVSS_Base >={6-60d-4-High/4-45d-Medium/2-30d-Low/1-15d-Lowest};
-  - encapsulate data of each rows in Jira query(**JSON**) using Jira **SUB-TASK** query template;
-  - **POST** this data to Jira via API(**create new sub-task**) ;
-  - Reporter name both for Task and Subtask will be your Jira API user.
-  - Send email report(log) as option.
+  - lookup for the all CSV(**OUTPUT_FORMAT**) report IDs, with Title(**TITLE**) started with '**JIRA_**'; 
+  - loop for all these reports
+    - compare this ID with recently processed ID's list, if there is no such ID -> process; else -> iterate next;
+    - **GET** the Report ID via Qualys API(CSV);
+    - truncate the Report header(**first 10 rows**);
+    - parse this report for column names: **'['IP', 'DNS', 'OS', 'QID', 'Title', 'Vuln Status', 'Severity', 'Port', 'First Detected', 'Last Detected', 'CVE ID', 'CVSS Base', 'Threat', 'Impact', 'Solution', 'Results', 'PCI Vuln', 'Associated AGs']'**;
+    - if '**CVSS Base**' is empty('**nan**') -> skip this row;
+    - create parent Task using IP, DNS; 
+    - duedate is set + timedelta(days=+90 from script running date), priority = Higest; .
+    - encapsulate data of each rows in Jira query(**JSON**) using Jira **TASK** query template;
+    - **POST** this data to Jira via API(**create new task**) ; parse Jira Task key from request;
+    - then create Sub-Task using Task key as Parent; 
+    - If CVSS_Base >= 8 duedate +90 from script running date) priority Higest; CVSS_Base >={6-60d-4-High/4-45d-Medium/2-30d-Low/1-15d-Lowest};
+    - encapsulate data of each rows in Jira query(**JSON**) using Jira **SUB-TASK** query template;
+    - **POST** this data to Jira via API(**create new sub-task**) ;
+    - Reporter name both for Task and Subtask will be your Jira API user.
+  - Send email report(log) as option, send user report(all processed/not processed reports and created Jira tickets) after iterating all found not processed reports.
 
 
 ====Qualys Creds File====
