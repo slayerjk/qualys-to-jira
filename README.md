@@ -42,7 +42,7 @@ Python modules required:
     - encapsulate data of each rows in Jira query(**JSON**) using Jira **SUB-TASK** query template;
     - **POST** this data to Jira via API(**create new sub-task**) ;
     - Reporter name both for Task and Subtask will be your Jira API user.
-  - Send email report(log) as option, send user report(all processed/not processed reports and created Jira tickets) after iterating all found not processed reports.
+  - Send email report(log) as option if email option is 'YES'('yes' by default), send user report(all processed/not processed reports and created Jira tickets) after iterating all found not processed reports.
 
 
 ====Qualys Creds File====
