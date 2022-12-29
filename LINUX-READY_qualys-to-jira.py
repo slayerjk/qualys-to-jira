@@ -3,6 +3,10 @@
 '''
 This script is automatization of creating Jira tickets,
 based on Qualys scan report.
+
+Python modules to install first:
+  * qualysapi
+  * pandas
 '''
 
 import logging
@@ -22,8 +26,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 ### DEFINING WORK DIR(SCRIPT'S LOCATION) ###
-#work_dir = '/home/marchenm/scripts/python/qualys-to-jira'
-work_dir = '<your-absolute-path>'
+work_dir = '<YOUR-ABSOLUTE-PATH>'
 
 ### SCRIPT APPNAME(FOR SEND MAIL FUNCTION & ETC)
 appname = 'qualys-to-jira'
@@ -51,99 +54,25 @@ logging.info('Script Starting Date&Time is: ' +
 try:
     from qualysapi import connect
 except Exception as error:
-    logging.exception('FAILURE: MODULE qualysapi MUST BE INSTALLED(pip3 install qualysapi)')
+    logging.exception('FAILED: MODULE qualysapi MUST BE INSTALLED(pip3 install qualysapi)')
 try:
     from pandas import read_csv, DataFrame
 except Exception as error:
-    logging.exception('FAILURE: MODULE pandas MUST BE INSTALLED(pip3 install pandas)')
+    logging.exception('FAILED: MODULE pandas MUST BE INSTALLED(pip3 install pandas)')
 
-######################################################################
-##### DEFINING ALL NECESSARRY FOLDERS/FILES & API URLS VARIABLES #####
+### EMAIL REPORT FUNCTION ###
 
-### LIST OF FOLDERS TO CREATE DIRS ###
-list_of_folders = []
-
-### DEFINING ALL NECESSARRY FOLDERS ###
-qualys_files_dir = work_dir+'/qualys_files'
-list_of_folders.append(qualys_files_dir)
-
-qualys_reports = qualys_files_dir+'/reports'
-list_of_folders.append(qualys_reports)
-
-jira_files_dir = work_dir+'/jira_files'
-list_of_folders.append((jira_files_dir))
-
-### DEFINING FILES VARIABLES ###
-qualys_reports_list = qualys_files_dir+'/qualys-reports-list.xml'
-qualys_last_processed_reports = qualys_files_dir + \
-    '/qualys-last-processed-reports.txt'
-qualys_report_ready = qualys_files_dir+'/qualys-report-ready.csv'
-
-jira_query_task_template = jira_files_dir+'/QUAL_jira-query-task-template.json'
-jira_query_subtask_template = jira_files_dir+'/QUAL_jira-query-subtask-template.json'
-jira_query_file = jira_files_dir+'/jira-query.json'
-
-### QUALYS API REPORTS LIST VARS ###
-qualys_creds = qualys_files_dir+'/qualys-creds.txt'
-qualys_api_url = '/api/2.0/fo/report/'
-qualys_reports_for_jira = dict()
-
-### JIRA API DATA ###
-jira_api_url = 'https://<YOUR_JIRA_DOMAIN>/rest/api/2/issue/'
-jira_coded_creds = '<YOUR_JIRA_BASE64_CREDS(ACC:PASS)>'
-
-jira_query_headers = {
-    'Authorization': 'Basic '+jira_coded_creds,
-    'X-Requested-With': 'qualys-to-jira-script',
-    'Accept': 'application/json',
-    'Content-Type': 'application/json'
-}
-
-jira_query_proxy = {
-    'http': None,
-    'https': None
-}
-
-### SMTP DATA(WITHOUT AUTH) ###
+### SMTP DATA(WITHOUT AUTH)
 '''
 Email report
 '''
-send_mail_option = 'yes'
-smtp_server = '<YOUR_SMTP_SERVER>'
-from_addr = f'{appname}@EX.COM'
-to_addr_list_users = ['USER1@EX.COM', 'USER2@EX.COM']
-to_addr_list_admins = ['ADMIN1@EX.COM', 'ADMIN2@EX.COM']
+send_mail_option = 'no'
+smtp_server = 'ex-srv2.bank.corp.centercredit.kz'
+from_addr = f'{appname}@bcc.kz'
+to_addr_list_users = ['sergey.massyutenko@bcc.kz', 'Georgiy.Tsekoyev@bcc.kz', 'maxim.marchenko@bcc.kz']
+to_addr_list_admins = ['maxim.marchenko@bcc.kz']
 smtp_port = 25
 
-#####################
-##### FUNCTIONS #####
-
-##### FILES ROTATION #####
-
-### DEFINE HOW MANY FILES TO KEEP(MOST RECENT) ###
-logs_to_keep = 30
-reports_to_keep = 30
-
-def files_rotate(path_to_rotate, num_of_files_to_keep):
-    count_files_to_keep = 1
-    basepath = sorted(Path(path_to_rotate).iterdir(), key=path.getctime, reverse=True)
-    for entry in basepath:
-        if count_files_to_keep > num_of_files_to_keep:
-            remove(entry)
-            logging.info('removed file is: '+str(entry))
-        count_files_to_keep += 1
-
-### ESTIMATED TIME ###
-
-def count_script_job_time():
-    end_date = datetime.now()
-    logging.info('\nEstimated time is: ' + str(end_date - today) + '\n##########\n')
-
-### EMAIL REPORT ###
-'''
-To send email report.
-By default, at the end of the script only.
-'''
 def send_mail_report(type):
     message = MIMEMultipart()
     message["From"] = from_addr
@@ -191,6 +120,63 @@ def send_mail_report(type):
             else:
                 logging.exception('FAILED: sending email final report, moving on...\n')
 
+######################################################################
+##### DEFINING ALL NECESSARRY FOLDERS/FILES & API URLS VARIABLES #####
+
+### LIST OF FOLDERS TO CREATE DIRS ###
+list_of_folders = []
+
+### DEFINING ALL NECESSARRY FOLDERS ###
+qualys_files_dir = work_dir+'/qualys_files'
+list_of_folders.append(qualys_files_dir)
+
+qualys_reports = qualys_files_dir+'/reports'
+list_of_folders.append(qualys_reports)
+
+jira_files_dir = work_dir+'/jira_files'
+list_of_folders.append((jira_files_dir))
+
+### DEFINING FILES VARIABLES ###
+qualys_reports_list = qualys_files_dir+'/qualys-reports-list.xml'
+qualys_last_processed_reports = qualys_files_dir + \
+    '/qualys-last-processed-reports.txt'
+qualys_report_ready = qualys_files_dir+'/qualys-report-ready.csv'
+
+jira_query_task_template = jira_files_dir+'/QUAL_jira-query-task-template.json'
+jira_query_subtask_template = jira_files_dir+'/QUAL_jira-query-subtask-template.json'
+jira_query_file = jira_files_dir+'/jira-query.json'
+
+### QUALYS API REPORTS LIST VARS ###
+qualys_creds = qualys_files_dir+'/qualys-creds.txt'
+qualys_api_url = '/api/2.0/fo/report/'
+qualys_reports_for_jira = dict()
+
+### JIRA API DATA ###
+jira_data = f'{jira_files_dir}/jira-data.txt'
+try:
+    with open(jira_data, 'r', encoding='utf-8') as file:
+        data = file.readlines()
+        jira_url = data[2].strip()
+        jira_coded_creds = data[4].strip()
+except Exception as e:
+    logging.exception('NO JIRA DATA FOUND, exiting')
+    send_mail_report('error')
+    exit()
+
+jira_api_url = f'{jira_url}/rest/api/2/issue/'
+
+jira_query_headers = {
+    'Authorization': f'Basic {jira_coded_creds}',
+    'X-Requested-With': 'qualys-to-jira-script',
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+}
+
+jira_query_proxy = {
+    'http': None,
+    'https': None
+}
+
 #############################
 ##### PRE-START ACTIONS #####
 
@@ -198,14 +184,34 @@ logging.info('STARTED: PRE-START ACTIONS')
 
 ### CHECKING JIRA TEMPLATES EXISTS ###
 if not path.isfile(jira_query_task_template):
-    logging.exception('FAILURE: Jira query Task template NOT FOUND, exiting...')
+    logging.exception('FAILED: Jira query Task template NOT FOUND, exiting...')
     send_mail_report('error')
     exit()
 
 if not path.isfile(jira_query_subtask_template):
-    logging.exception('FAILURE: Jira query Sub-Task template NOT FOUND, exiting...')
+    logging.exception('FAILED: Jira query Sub-Task template NOT FOUND, exiting...')
     send_mail_report('error')
     exit()
+
+### FILES ROTATION FUNCTION ###
+### DEFINE HOW MANY FILES TO KEEP(MOST RECENT)
+logs_to_keep = 30
+reports_to_keep = 30
+
+def files_rotate(path_to_rotate, num_of_files_to_keep):
+    count_files_to_keep = 1
+    basepath = sorted(Path(path_to_rotate).iterdir(), key=path.getctime, reverse=True)
+    for entry in basepath:
+        if count_files_to_keep > num_of_files_to_keep:
+            remove(entry)
+            logging.info('removed file is: '+str(entry))
+        count_files_to_keep += 1
+
+### ESTIMATED TIME ###
+
+def count_script_job_time():
+    end_date = datetime.now()
+    logging.info('\nEstimated time is: ' + str(end_date - today) + '\n##########\n')
 
 ### CREATING ALL NECESSARRY FOLDERS ###
 logging.info('Starting to create all necessarry folders...')
@@ -229,7 +235,7 @@ logging.info('STARTED: GET QUALYS REPORTS LIST')
 try:
     qualys_request_get_reports_list = connect(qualys_creds)
 except Exception as error:
-    logging.exception('FAILURE: Failed to GET Qualys reports list, exiting...')
+    logging.exception('FAILED: Failed to GET Qualys reports list, exiting...')
     send_mail_report('error')
     exit()
 
@@ -246,7 +252,7 @@ try:
         f.close()
         logging.info('DONE: GET QUALYS REPORTS LIST\n')
 except Exception as error:
-    logging.exception('FAILURE: GET QUALYS REPORTS LIST, exiting...')
+    logging.exception('FAILED: GET QUALYS REPORTS LIST, exiting...')
     send_mail_report('error')
     exit()
 
@@ -265,7 +271,7 @@ try:
         f.close()
 except Exception as error:
     logging.exception(
-        'FAILURE: Checking qualys_last_processed_reports exists, exiting...')
+        'FAILED: Checking qualys_last_processed_reports exists, exiting...')
     send_mail_report('error')
     exit()
 logging.info('DONE: Checking qualys_last_processed_reports exists\n')
@@ -276,6 +282,17 @@ myroot = mytree.getroot()
 reports_list = myroot[0][1]
 
 try:
+    logging.info('START: forming last processed report list')
+    with open(qualys_last_processed_reports, 'r') as rep_check_list:
+        try:
+            list_qualys_last_processed_reports = [int(i.strip()) for i in rep_check_list.readlines()]
+        except ValueError as e:
+            logging.exception('FAILED: forming last processed report list, not number in list, exiting...')
+            send_mail_report('error')
+            exit()
+    logging.info('DONE: forming Qualys last processed report list')
+    logging.info(f'Last processed reports is:\n{list_qualys_last_processed_reports}\n')        
+
     for rep_data in reports_list.findall('REPORT'):
         rep_id = rep_data.find('ID').text
         rep_title = rep_data.find('TITLE').text
@@ -287,20 +304,19 @@ try:
             user_report_temp.write(f'PROPER QUALYS REPORT FOUND: {rep_id}:{rep_title}\n')
             
             logging.info(f'Checking Report id({rep_id}) has been processed')
-            with open(qualys_last_processed_reports, 'r') as rep_check_list:
-                count_doubles = 0
-                for line in rep_check_list.readlines():
-                    if line.startswith(rep_id):
-                        logging.info(f'FOUND DUBLICATE ID({rep_id}) IN PROCESSED REPORT, skipping this report\n')
-                        user_report_temp.write(f'{rep_id}:{rep_title} - HAS BEEN PROCESSED ALREADY\n\n')
-                        count_doubles += 1
-                        break
-                if count_doubles == 0:
-                    logging.info(f'NEW REPORT FOR JIRA HAS FOUND: {rep_id}:{rep_title}\n')
-                    user_report_temp.write(f'{rep_id}:{rep_title} - NEW REPORT TO PROCESS\n\n')
-                    qualys_reports_for_jira[rep_id] = rep_title
+            is_processed = False
+            for id in list_qualys_last_processed_reports:
+                if int(rep_id) <= int(id):
+                    logging.info(f'{rep_id} HAS BEEN PROCESSED ALREADY, skipping this report\n')
+                    user_report_temp.write(f'{rep_id}:{rep_title} - HAS BEEN PROCESSED ALREADY\n\n')
+                    is_processed = True
+                    break
+            if not is_processed:
+                logging.info(f'NEW REPORT FOR JIRA HAS FOUND: {rep_id}:{rep_title}\n')
+                user_report_temp.write(f'{rep_id}:{rep_title} - NEW REPORT TO PROCESS\n\n')
+                qualys_reports_for_jira[rep_id] = rep_title
 except Exception as error:
-    logging.exception('FAILURE: Parsing Qualys Reports List, exiting...')
+    logging.exception('FAILED: Parsing Qualys Reports List, exiting...')
     send_mail_report('error')
     exit()
 logging.info(f'DONE: PARSE QUALYS REPORTS LIST & CHECK IF EXISTS IN PROCESSESD RERPORTS LIST\n')
@@ -313,7 +329,7 @@ if len(qualys_reports_for_jira) == 0:
     try:
         files_rotate(logs_dir, logs_to_keep)
     except Exception as error:
-        logging.exception('FAILURE: failed to rotate logs')
+        logging.exception('FAILED: failed to rotate logs')
     logging.info('Finished log rotation\n')
     logging.info('SCRIPT WORK DONE: QUALYS REPORT TO JIRA TICKET')
     send_mail_report('log')
@@ -323,6 +339,8 @@ else:
     for key, value in qualys_reports_for_jira.items():
         logging.info(f'{key}: {value}')
     logging.info('DONE: showing final report list to prcess\n')
+
+exit()
 
 #######################################################
 ### MODULE: GETTING NEW REPORT ID AND SAVING TO CSV ###
@@ -338,7 +356,7 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
     try:
         qualys_request_get_report = connect(qualys_creds)
     except Exception as error:
-        logging.exception('FAILURE: Failed to GET Qualys CSV Report, exiting...')
+        logging.exception('FAILED: Failed to GET Qualys CSV Report, exiting...')
         send_mail_report('error')
         exit()
 
@@ -363,7 +381,7 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
             print(resp, file=f)
     except Exception as error:
         logging.exception(
-            'FAILURE: Failed to GET/Save Qualys CSV Report Data, exiting')
+            'FAILED: Failed to GET/Save Qualys CSV Report Data, exiting')
         send_mail_report('error')
         exit()
     logging.info('DONE: GETTING NEW REPORT ID AND SAVING TO CSV\n')
@@ -379,7 +397,7 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
         try:
             jira_assignee = str(re.findall(jira_assignee_pattern, report.read())[0]).upper()
         except IndexError as e:
-            logging.exception('FAILURE: searching jira assignee from qualys report, exiting')
+            logging.exception('FAILED: searching jira assignee from qualys report, exiting')
             send_mail_report('error')
             exit()
     logging.info('DONE: searching jira assignee from qualys report')
@@ -389,7 +407,7 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
     try:
         df = read_csv(qualys_report, index_col='IP', skiprows=10)
     except Exception as error:
-        logging.exception('FAILURE: trying delete first 10 rows of csv header, exiting...')
+        logging.exception('FAILED: trying delete first 10 rows of csv header, exiting...')
         send_mail_report('error')
         exit()
     logging.info('DONE: trying delete first 10 rows of csv header...\n')
@@ -399,7 +417,7 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
         df.to_csv(qualys_report_ready)
     except Exception as error:
         logging.exception(
-            'FAILURE: Writing downloaded CSV report modification, exiting...')
+            'FAILED: Writing downloaded CSV report modification, exiting...')
         send_mail_report('error')
         exit()
     logging.info('DONE: writing downloaded CSV report modification\n')
@@ -474,7 +492,7 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
                     try:
                         jira_api_request = requests.post(jira_api_url, data=open(jira_query_file, 'rb'), headers=jira_query_headers, proxies=jira_query_proxy)
                     except Exception as error:
-                        logging.exception('FAILURE: Sending JSON data(TASK) to Jira API, exiting...')
+                        logging.exception('FAILED: Sending JSON data(TASK) to Jira API, exiting...')
                         send_mail_report('error')
                         exit()
                     if jira_api_request.status_code == 201:
@@ -493,7 +511,7 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
                         exit()
             except Exception as error:
                 logging.exception(
-                    'FAILURE: encapsulating CSV report data to JIRA query, exiting...')
+                    'FAILED: encapsulating CSV report data to JIRA query, exiting...')
                 send_mail_report('error')
                 exit()
         ### CHECKING: CREATE SUBTASK ###
@@ -550,7 +568,7 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
                 try:
                     jira_api_request = requests.post(jira_api_url, data=open(jira_query_file, 'rb'), headers=jira_query_headers, proxies=jira_query_proxy)
                 except Exception as error:
-                    logging.exception('FAILURE: failed to send JSON data(SUB-TASK) to Jira API, exiting...')
+                    logging.exception('FAILED: failed to send JSON data(SUB-TASK) to Jira API, exiting...')
                     send_mail_report('error')
                     exit()
                 if jira_api_request.status_code == 201:
@@ -567,14 +585,14 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
                     exit()
         except Exception as error:
             logging.exception(
-                'FAILURE: Failed to encapsulate modified CSV report data to JIRA query, exiting...')
+                'FAILED: Failed to encapsulate modified CSV report data to JIRA query, exiting...')
             send_mail_report('error')
             exit()
     logging.info('DONE: PARSE CSV & ADD VALUES TO JIRA JSON TEMPLATE AND SEND IT TO JIRA\n')
 
     logging.info(f'STARTED: show result for {cur_rep_id}{cur_rep_title}')
     
-    user_report_temp.write(f'РЕЗУЛЬТАТ ОБРАБОТКИ {cur_rep_id}:{cur_rep_title}\n')    
+    user_report_temp.write(f'RESULT FOR {cur_rep_id}:{cur_rep_title}\n')    
     
     if jira_tasks_count == 0:
         logging.warning('NO JIRA TASKS CREATED: Qualys report might be EMPTY!')
@@ -593,20 +611,6 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
         logging.info('-----')
         user_report_temp.write('\n\n')
     logging.info('DONE: show created Jira tasks info')
-    
-    ### SEND FINAL REPORT FOR USERS
-    send_mail_report('report')
-
-    logging.info('STARTED: writing processed report ID to processed reports check list...')
-    try:
-        with open(qualys_last_processed_reports, 'a+') as rep_check_list:
-            rep_check_list.writelines(f'{cur_rep_id}\n')
-    except Exception as error:
-        logging.exception(
-            'FAILURE: failed to Write Last CSV Report ID to processed reports list, exiting...')
-        send_mail_report('error')
-        exit()
-    logging.info('DONE: writing processed report ID to processed reports check list\n')
 
     logging.info('STARTED: Archiving(tar.gz) downloaded qualys report..')
     try:
@@ -635,6 +639,21 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
     logging.info('------------------------------------\n')
 
 logging.info('DONE: TO ITERATE OVER QUALYS REPORTS LIST FOR JIRA\n')
+    
+### SEND FINAL REPORT FOR USERS
+send_mail_report('report')
+
+logging.info('STARTED: writing processed report ID to processed reports check list...')
+try:
+    with open(qualys_last_processed_reports, 'w') as rep_check_list:
+        for key in qualys_reports_for_jira.keys():
+            rep_check_list.write(f'{key}\n')
+except Exception as error:
+    logging.exception(
+        'FAILED: failed to Write Last CSV Report ID to processed reports list, exiting...')
+    send_mail_report('error')
+    exit()
+logging.info('DONE: writing processed report ID to processed reports check list\n')
 
 #####################
 ##### POST JOBS #####
@@ -645,14 +664,14 @@ logging.info('STARTED: log rotation...')
 try:
     files_rotate(logs_dir, logs_to_keep)
 except Exception as error:
-    logging.exception('FAILURE: failed to rotate logs')
+    logging.exception('FAILED: failed to rotate logs')
 logging.info('DONE: log rotation\n')    
 
 logging.info('STARTED: reports rotation...')
 try:
     files_rotate(qualys_reports, reports_to_keep)
 except Exception as error:
-    logging.exception('FAILURE: failed to rotate reports')
+    logging.exception('FAILED: failed to rotate reports')
 logging.info('DONE: reports rotation\n')    
 
 logging.info('DONE: POST JOBS\n')
