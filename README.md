@@ -44,9 +44,18 @@ Python modules required:
     - Reporter name both for Task and Subtask will be your Jira API user.
   - Send email report(log) as option if email option is 'YES'('yes' by default), send user report(all processed/not processed reports and created Jira tickets) after iterating all found not processed reports.
 
+====Jira Data File====
+jira_files/jira-data.txt:
+```
+# SCRIPT CHECKS LINE 3 and LINE 5 for URL and CREDS
+# YOUR JIRA URL(without api)
+https://jira.domain.example.com
+# YOUR JIRA BASE64 CODED CREDS(user:password)
+***
+```
 
 ====Qualys Creds File====
-
+qualys_files/qyalys-creds.txt:
 ```
 %
 [info]
