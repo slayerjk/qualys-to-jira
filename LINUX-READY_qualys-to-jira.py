@@ -66,7 +66,7 @@ except Exception as error:
 '''
 Email report
 '''
-send_mail_option = 'no'
+send_mail_option = 'yes'
 smtp_server = 'ex-srv2.bank.corp.centercredit.kz'
 from_addr = f'{appname}@bcc.kz'
 to_addr_list_users = ['sergey.massyutenko@bcc.kz', 'Georgiy.Tsekoyev@bcc.kz', 'maxim.marchenko@bcc.kz']
