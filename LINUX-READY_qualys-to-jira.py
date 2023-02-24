@@ -26,7 +26,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 ### DEFINING WORK DIR(SCRIPT'S LOCATION) ###
-work_dir = '<YOUR-ABSOLUTE-PATH>'
+work_dir = '<YOUR_ABS_PATH>'
 
 ### SCRIPT APPNAME(FOR SEND MAIL FUNCTION & ETC)
 appname = 'qualys-to-jira'
@@ -61,16 +61,19 @@ except Exception as error:
     logging.exception('FAILED: MODULE pandas MUST BE INSTALLED(pip3 install pandas)')
 
 ### EMAIL REPORT FUNCTION ###
-
-### SMTP DATA(WITHOUT AUTH)
+'''
+To send email report.
+By default, at the end of the script only.
+'''
+### SMTP DATA(WITHOUT AUTH) ###
 '''
 Email report
 '''
 send_mail_option = 'yes'
-smtp_server = 'ex-srv2.bank.corp.centercredit.kz'
-from_addr = f'{appname}@bcc.kz'
-to_addr_list_users = ['sergey.massyutenko@bcc.kz', 'Georgiy.Tsekoyev@bcc.kz', 'maxim.marchenko@bcc.kz']
-to_addr_list_admins = ['maxim.marchenko@bcc.kz']
+smtp_server = '<YOUR SMTP SERVER>'
+from_addr = f'{appname}@<YOUR DOMAIN>'
+to_addr_list_users = ['<USER1 EMAIL>', '<USER2 EMAIL>']
+to_addr_list_admins = ['<ADMIN1 EMAIL>', '<ADMIN2 EMAIL>']
 smtp_port = 25
 
 def send_mail_report(type):
@@ -246,6 +249,7 @@ qualys_reports_list_params = {
 ### PERFORM API REQUEST ###
 resp = qualys_request_get_reports_list.request(
     qualys_api_url, qualys_reports_list_params)
+
 try:
     with open(qualys_reports_list, 'w', encoding='utf_8_sig') as f:
         print(resp, file=f)
@@ -339,8 +343,6 @@ else:
     for key, value in qualys_reports_for_jira.items():
         logging.info(f'{key}: {value}')
     logging.info('DONE: showing final report list to prcess\n')
-
-exit()
 
 #######################################################
 ### MODULE: GETTING NEW REPORT ID AND SAVING TO CSV ###
@@ -597,7 +599,6 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
     if jira_tasks_count == 0:
         logging.warning('NO JIRA TASKS CREATED: Qualys report might be EMPTY!')
         user_report_temp.write('NO JIRA TASKES WAS CREATED, EMPTY QUALYS REPORT!\n\n')
-        user_report_temp.seek(0)
     else:
         logging.info('Jira TASKS created: ' + str(jira_tasks_count))
         logging.info('Jira SUB-TASKS created: ' + str(jira_subtasks_count))
@@ -646,8 +647,7 @@ send_mail_report('report')
 logging.info('STARTED: writing processed report ID to processed reports check list...')
 try:
     with open(qualys_last_processed_reports, 'w') as rep_check_list:
-        for key in qualys_reports_for_jira.keys():
-            rep_check_list.write(f'{key}\n')
+        rep_check_list.write('\n'.join(qualys_reports_for_jira.keys()))
 except Exception as error:
     logging.exception(
         'FAILED: failed to Write Last CSV Report ID to processed reports list, exiting...')
