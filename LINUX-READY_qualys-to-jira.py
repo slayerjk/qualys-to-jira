@@ -89,7 +89,7 @@ def send_mail_report(type):
             rcpt_to = to_addr_list_admins
         elif type == 'report':
             logging.info('START: sending jira tasks final report')
-            message["Subject"] = f'{appname} - Результат({today})'
+            message["Subject"] = f'{appname} - Result({today})'
             message["To"] = ', '.join(to_addr_list_users)
             rcpt_to = to_addr_list_users
             user_report_temp.seek(0)
