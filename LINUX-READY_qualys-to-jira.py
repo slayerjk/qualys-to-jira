@@ -242,7 +242,7 @@ except Exception as e:
     send_mail_report('error')
     exit()
 else:
-    logging.info('DONE: GET QUALYS REPORTS LIST')
+    logging.info('DONE: GET QUALYS REPORTS LIST\n')
 
 ### QUALYS GET REPORT LIST API PARAMS ###
 qualys_reports_list_params = {
@@ -260,15 +260,17 @@ except Exception as e:
 else:
     logging.info('DONE: getting qualys reports list parameters\n')
 
+logging.info('STARTED: writing qualys api response to report list')
 try:
     with open(qualys_reports_list, 'w', encoding='utf_8_sig') as f:
         print(resp, file=f)
         f.close()
-        logging.info('DONE: GET QUALYS REPORTS LIST\n')
 except Exception as error:
-    logging.exception('FAILED: GET QUALYS REPORTS LIST, exiting...')
+    logging.exception('FAILED: writing qualys api response to report list, exiting...')
     send_mail_report('error')
     exit()
+else:
+    logging.info('DONE: writing qualys api response to report list\n')
 
 ##########################################################################################
 ##### MODULE: PARSE QUALYS REPORTS LIST, CHECK IF EXISTS IN PROCESSESD RERPORTS LIST #####
