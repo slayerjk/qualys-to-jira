@@ -237,18 +237,28 @@ user_report_temp.write(f'SCRIPT WORK STARTED QUALYS - {today}\n\n')
 logging.info('STARTED: GET QUALYS REPORTS LIST')
 try:
     qualys_request_get_reports_list = connect(qualys_creds)
-except Exception as error:
+except Exception as e:
     logging.exception('FAILED: Failed to GET Qualys reports list, exiting...')
     send_mail_report('error')
     exit()
+else:
+    logging.info('DONE: GET QUALYS REPORTS LIST')
 
 ### QUALYS GET REPORT LIST API PARAMS ###
 qualys_reports_list_params = {
     'action': 'list'
 }
 ### PERFORM API REQUEST ###
-resp = qualys_request_get_reports_list.request(
-    qualys_api_url, qualys_reports_list_params)
+logging.info('STARTED: getting qualys reports list parameters')
+try:
+    resp = qualys_request_get_reports_list.request(
+        qualys_api_url, qualys_reports_list_params)
+except Exception as e:
+    logging.exception(f'FAILED: getting qualys reports list parameters, exiting')
+    send_mail_report('error')
+    exit()
+else:
+    logging.info('DONE: getting qualys reports list parameters\n')
 
 try:
     with open(qualys_reports_list, 'w', encoding='utf_8_sig') as f:
@@ -339,10 +349,10 @@ if len(qualys_reports_for_jira) == 0:
     send_mail_report('log')
     exit()
 else:
-    logging.info('STARTED: showing final report list to prcess:')
+    logging.info('STARTED: showing final report list to process:')
     for key, value in qualys_reports_for_jira.items():
         logging.info(f'{key}: {value}')
-    logging.info('DONE: showing final report list to prcess\n')
+    logging.info('DONE: showing final report list to process\n')
 
 #######################################################
 ### MODULE: GETTING NEW REPORT ID AND SAVING TO CSV ###
