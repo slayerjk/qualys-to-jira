@@ -1,0 +1,23 @@
+# ignore all
+*
+
+# except
+!app_scripts/app_functions.py
+!app_scripts/project_mailing.py
+!app_scripts/project_helper.py
+
+!data_files/BLANK_mailing_data.json
+!data_files/BLANK_data.json
+
+!app.py
+!project_static.py
+
+!qualys-to-jira.py
+!qualys_files/BLANK_qualys-creds.txt
+!jira_files/BLANK_jira-data.txt
+!jira_files/BLANK_QUAL_jira-query-subtask-template.json
+!jira_files/BLANK_QUAL_jira-query-task-template.json
+
+!.gitignore
+!README.md
+!requirements.txt
