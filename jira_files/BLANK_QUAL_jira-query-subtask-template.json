@@ -1,0 +1,44 @@
+{
+    "fields": {
+        "project": {
+            "key": "<your-project-key>"
+        },
+		"parent": {
+            "key": ""
+        },
+        "issuetype": {
+            "name": "Hole"
+        },
+        "summary": "",
+        "assignee": {
+            "name": ""
+        },
+		"reporter": {
+            "name": "<your-robot-user>"
+        },
+		"customfield_11616": "",
+		"customfield_11612": "",
+		"customfield_11617": "",
+		"customfield_11615": "",
+		"customfield_11618": "",
+		"customfield_11619": "",
+		"customfield_11620": "",
+		"customfield_11621": "",
+		"customfield_11622": "",
+		"customfield_11624": "",
+		"customfield_11625": "",
+		"customfield_11626": "",
+		"customfield_11627": "",
+        "customfield_10200": "",
+        "duedate": "",
+        "description": "",
+        "priority": {
+            "name": ""
+        },
+        "customfield_11024": [
+            {
+                "key": "<your-key-for-customfield>"
+            }
+        ]
+    }
+}
