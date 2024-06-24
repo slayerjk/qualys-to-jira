@@ -26,7 +26,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 ### DEFINING WORK DIR(SCRIPT'S LOCATION) ###
-work_dir = '<your-script-working-dir>'
+work_dir = '</your/script/dir>'
 
 ### SCRIPT APPNAME(FOR SEND MAIL FUNCTION & ETC)
 appname = 'qualys-to-jira'
@@ -70,10 +70,10 @@ By default, at the end of the script only.
 Email report
 '''
 send_mail_option = 'yes'
-smtp_server = '<your-smtp-server>'
-from_addr = f'{appname}@<domain.com>'
-to_addr_list_users = ['user1@dom.com', 'user2@domk.com']
-to_addr_list_admins = ['user2@dom.com']
+smtp_server = ''
+from_addr = f'{appname}@???'
+to_addr_list_users = ['???', '???']
+to_addr_list_admins = ['???']
 smtp_port = 25
 
 def send_mail_report(type):
@@ -455,8 +455,8 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
     jira_task_keys = []
     jira_task_key_pattern = '^.*"key":"(.*)",.*$'
     '''
-    b'{"id":"46475","key":"QUAL-2919","self":"https://jira.bcc.kz/rest/api/2/issue/46475"}' 
-    b'{"id":"46476","key":"QUAL-2920","self":"https://jira.bcc.kz/rest/api/2/issue/46476"}'
+    b'{"id":"46475","key":"QUAL-2919","self":"https://<EXAMPLE.COM>/rest/api/2/issue/46475"}' 
+    b'{"id":"46476","key":"QUAL-2920","self":"https://<EXAMPLE.COM>/rest/api/2/issue/46476"}'
     '''
     logging.info('STARTED: getting values from csv report')
     for ind in df.index:
