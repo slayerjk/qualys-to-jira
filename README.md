@@ -178,3 +178,19 @@ You'll have to change script body accordingly!
     }
 }
 ```
+
+====project_static.py====
+
+Contain all local variables, logging settings.
+
+====app_scripts/project_helper.py====
+
+VA helper fuctions
+
+====app_scripts/project_mailing.py====
+
+Mailing functions
+
+====data_files/BLANK_mailing_data.json====
+
+BLANK template for SMTP Data
