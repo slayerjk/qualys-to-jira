@@ -242,8 +242,7 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
 
     # QUALYS GET REPORT ID API PARAMS
     qualys_get_report_params = {
-        'action': 'list',
-        # 'action': 'fetch',
+        'action': 'fetch',
         'id': cur_rep_id
     }
 
@@ -255,8 +254,8 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
     # PERFORM API REQUEST
     resp = qualys_request_get_report.request(
         qualys_api_url, qualys_get_report_params)
-
     # print(resp) # Raw text response from Qualys
+
     try:
         with open(qualys_report, 'w', encoding='utf-8') as f:
             print(resp, file=f)
