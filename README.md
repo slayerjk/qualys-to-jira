@@ -44,6 +44,12 @@ Python modules required:
     - Reporter name both for Task and Subtask will be your Jira API user.
   - Send email report(log) as option if email option is 'YES'('yes' by default), send user report(all processed/not processed reports and created Jira tickets) after iterating all found not processed reports.
 
+To get Jira Assignee(AD user), report MUST contain Asset Tags like: 
+```
+Included(all): ALL domain controller, Assignee_ADUSER_;
+```
+Script will search substring ADUSER in Assignee_ADUSER_.
+
 ====Jira Data File====
 
 jira_files/jira-data.txt:
