@@ -9,7 +9,6 @@ By default script uses script's location dir.
 If you need custom path for script(sensitive) data
 '''
 work_dir = path.dirname(path.realpath(__file__))
-data_files = f'{work_dir}/data_files'
 
 # SCRIPT APPNAME(FOR SEND MAIL FUNCTION & ETC)
 appname = 'qualys-to-jira'

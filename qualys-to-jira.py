@@ -14,6 +14,7 @@ from datetime import timedelta
 from time import sleep
 from os import mkdir, path, remove
 from sys import exit
+from platform import system as platform_system
 
 import requests
 import urllib3
@@ -285,14 +286,15 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
     logging.info('DONE: searching jira assignee from qualys report')
     logging.info(f'Jira assignee is: {jira_assignee}\n')
 
-    logging.info('STARTED: trying delete first 10 rows of csv header...')
-    try:
-        df = read_csv(qualys_report, index_col='IP', skiprows=10)
-    except Exception as error:
-        logging.exception(f'FAILED: trying delete first 10 rows of csv header,\n{error}\nexiting...')
-        send_mail_report(*mail_settings, mail_type='error')
-        exit()
-    logging.info('DONE: trying delete first 10 rows of csv header...\n')
+    if platform_system() != 'Windows':
+        logging.info('STARTED: trying delete first 10 rows of csv header...')
+        try:
+            df = read_csv(qualys_report, index_col='IP', skiprows=10)
+        except Exception as error:
+            logging.exception(f'FAILED: trying delete first 10 rows of csv header,\n{error}\nexiting...')
+            send_mail_report(*mail_settings, mail_type='error')
+            exit()
+        logging.info('DONE: trying delete first 10 rows of csv header...\n')
 
     logging.info('STARTED: writing downloaded CSV report modification')
     try:
