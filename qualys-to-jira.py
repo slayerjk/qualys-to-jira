@@ -16,6 +16,7 @@ from os import mkdir, path, remove
 from sys import exit
 
 import requests
+import urllib3
 from xml.etree.ElementTree import parse
 from json import loads, dumps
 import re
@@ -56,6 +57,9 @@ from project_static import (
 from app_scripts.project_helper import files_rotate, count_script_job_time
 
 from app_scripts.project_mailing import send_mail_report
+
+# Disable urllib warnings
+urllib3.disable_warnings()
 
 # CREATING USER REPORT FILE
 user_report_temp = TemporaryFile('w+t')
@@ -120,7 +124,7 @@ qualys_reports_list_params = {
 logging.info('STARTED: getting qualys reports list parameters')
 try:
     resp = qualys_request_get_reports_list.request(
-        qualys_api_url, qualys_reports_list_params)
+        qualys_api_url, qualys_reports_list_params, verify=False)
 except Exception as e:
     logging.exception(f'FAILED: getting qualys reports list parameters,\n{e}\nexiting')
     send_mail_report(*mail_settings, mail_type='error')
