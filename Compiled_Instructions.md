@@ -12,6 +12,7 @@ Script will search **ADUSER** substring in "**Assignee_ADUSER_**".
 2. Insise qualys-to-jira dir you'll find: 
     * _internal : dir, all necessary libs and data to run the script
     * qualys-to-jira.exe: binary file to run
+    * Compiled_instructions.md: these instructions
 3. Most probably you need to modify several files in _internal/!DATA folder:
     * data_files/mailing_data.json:
       * list_admins: list of admins' email(s) to get error and overall script log
