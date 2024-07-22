@@ -54,7 +54,7 @@ Script will search substring ADUSER in Assignee_ADUSER_.
 
 ====Jira Data File====
 
-jira_files/jira-data.json:
+!DATA/jira_files/jira-data.json:
 ```
 {
     "jira_url": "https://<YOUR-JIRA-DOMAIN>",
@@ -70,7 +70,7 @@ jira_files/jira-data.json:
 
 ====Qualys Creds File====
 
-qualys_files/qyalys-creds.txt:
+!DATA/qualys_files/qyalys-creds.txt:
 ```
 %
 [info]
@@ -204,6 +204,6 @@ VA helper fuctions
 
 Mailing functions
 
-====data_files/BLANK_mailing_data.json====
+====!DATA/data_files/BLANK_mailing_data.json====
 
 BLANK template for SMTP Data
