@@ -23,7 +23,7 @@ reports_to_keep = 30
 today = datetime.now()
 jira_date_format = date.today()
 
-logs_dir = f'{work_dir}/logs'
+logs_dir = f'{work_dir}/!DATA/logs'
 
 if not path.isdir(logs_dir):
     mkdir(logs_dir)
@@ -43,13 +43,13 @@ logging.info('Script Starting Date&Time is: ' +
 list_of_folders = []
 
 # DEFINING ALL NECESSARRY FOLDERS
-qualys_files_dir = f'{work_dir}/qualys_files'
+qualys_files_dir = f'{work_dir}/!DATA/qualys_files'
 list_of_folders.append(qualys_files_dir)
 
 qualys_reports = f'{qualys_files_dir}/reports'
 list_of_folders.append(qualys_reports)
 
-jira_files_dir = f'{work_dir}/jira_files'
+jira_files_dir = f'{work_dir}/!DATA/jira_files'
 list_of_folders.append(jira_files_dir)
 
 # DEFINING FILES VARIABLES
@@ -102,7 +102,7 @@ jira_query_proxy = {
 Email report
 '''
 send_mail_option = 'yes'
-mail_data = f'{work_dir}/data_files/mailing_data.json'
+mail_data = f'{work_dir}/!DATA/data_files/mailing_data.json'
 try:
     with open(mail_data, 'r', encoding='utf-8') as file:
         data = json.load(file)
