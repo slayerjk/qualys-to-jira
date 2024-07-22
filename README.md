@@ -59,12 +59,12 @@ jira_files/jira-data.json:
 {
     "jira_url": "https://<YOUR-JIRA-DOMAIN>",
     "jira_coded_creds": "YOUR-BASE64-CODED-JIRA-API-USER-CREDS",
-    "jira_task_due_date": 90,
-    "cvss_8_and_more": 15,
-    "cvss_6_and_more": 30,
-    "cvss_4_and_more": 45,
-    "cvss_2_and_more": 60,
-    "cvss_1_and_more": 90
+    "jira_task_due_date_timedelta": 90,
+    "cvss_8_and_more_timedelta": 15,
+    "cvss_6_and_more_timedelta": 30,
+    "cvss_4_and_more_timedelta": 45,
+    "cvss_2_and_more_timedelta": 60,
+    "cvss_1_and_more_timedelta": 90
 }
 ```
 

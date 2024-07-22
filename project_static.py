@@ -73,12 +73,12 @@ try:
         data = json.load(file)
         jira_url = data['jira_url']
         jira_coded_creds = data['jira_coded_creds']
-        jira_task_due_date = data['jira_task_due_date']
-        cvss_8_and_more = data['cvss_8_and_more']
-        cvss_6_and_more = data['cvss_6_and_more']
-        cvss_4_and_more = data['cvss_4_and_more']
-        cvss_2_and_more = data['cvss_2_and_more']
-        cvss_1_and_more = data['cvss_1_and_more']
+        jira_task_due_date_timedelta = data['jira_task_due_date_timedelta']
+        cvss_8_and_more_timedelta = data['cvss_8_and_more_timedelta']
+        cvss_6_and_more_timedelta = data['cvss_6_and_more_timedelta']
+        cvss_4_and_more_timedelta = data['cvss_4_and_more_timedelta']
+        cvss_2_and_more_timedelta = data['cvss_2_and_more_timedelta']
+        cvss_1_and_more_timedelta = data['cvss_1_and_more_timedelta']
 except Exception as e:
     raise Exception(f'NO JIRA DATA FOUND,/n{e}/n exiting')
 
