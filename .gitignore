@@ -6,18 +6,18 @@
 !app_scripts/project_mailing.py
 !app_scripts/project_helper.py
 
-!"!DATA/data_files/BLANK_mailing_data.json"
-!"!DATAdata_files/BLANK_data.json"
+!/!DATA/data_files/BLANK_mailing_data.json"
+!/!DATAdata_files/BLANK_data.json"
 
 !app.py
 !project_static.py
 
-!"!DATA/qualys-to-jira.py"
-!"!DATA/qualys_files/BLANK_qualys-creds.txt"
+!/!DATA/qualys-to-jira.py
+!/!DATA/qualys_files/BLANK_qualys-creds.txt"
 
-!"!DATA/jira_files/BLANK_jira-data.json"
-!"!DATA/jira_files/BLANK_QUAL_jira-query-subtask-template.json"
-!"!DATA/jira_files/BLANK_QUAL_jira-query-task-template.json"
+!/!DATA/jira_files/BLANK_jira-data.json"
+!/!DATA/jira_files/BLANK_QUAL_jira-query-subtask-template.json"
+!/!DATA/jira_files/BLANK_QUAL_jira-query-task-template.json"
 
 !.gitignore
 !README.md
