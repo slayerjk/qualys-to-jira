@@ -1,0 +1,28 @@
+{
+    "fields": {
+        "project": {
+            "key": "<your-project-key>"
+        },
+        "issuetype": {
+            "name": "Task"
+        },
+        "summary": "",
+        "assignee": {
+            "name": ""
+        },
+				"reporter": {
+            "name": "<your-robot-user>"
+        },
+        "customfield_10200": "",
+        "duedate": "",
+        "description": "",
+        "priority": {
+            "name": ""
+        },
+        "customfield_11024": [
+            {
+                "key": "<your-custom-field-key>"
+            }
+        ]
+    }
+}
