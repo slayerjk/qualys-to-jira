@@ -1,5 +1,0 @@
-# SCRIPT CHECKS LINE 3 and LINE 5 for URL and CREDS
-# YOUR JIRA URL(without api)
-https://<your-jira-domain>
-# YOUR JIRA BASE64 CODED CREDS(user:password)
-<your-base64-coded-creds>
