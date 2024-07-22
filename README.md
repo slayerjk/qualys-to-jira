@@ -23,6 +23,8 @@ Python modules required:
   * qualysapi
   * pandas
 
+DON'T FORGET TO RENAME ALL CORRESPONDING "BLANK_" DATA FILES(REMOVE "BLANK_" PREFIX) AND EDIT THEM!
+
 ====Script workflow====
 
   - **GET** Qualys reports list(**XML**) via Qualys API;
@@ -52,13 +54,18 @@ Script will search substring ADUSER in Assignee_ADUSER_.
 
 ====Jira Data File====
 
-jira_files/jira-data.txt:
+jira_files/jira-data.json:
 ```
-# SCRIPT CHECKS LINE 3 and LINE 5 for URL and CREDS
-# YOUR JIRA URL(without api)
-https://jira.domain.example.com
-# YOUR JIRA BASE64 CODED CREDS(user:password)
-***
+{
+    "jira_url": "https://<YOUR-JIRA-DOMAIN>",
+    "jira_coded_creds": "YOUR-BASE64-CODED-JIRA-API-USER-CREDS",
+    "jira_task_due_date": 90,
+    "cvss_8_and_more": 15,
+    "cvss_6_and_more": 30,
+    "cvss_4_and_more": 45,
+    "cvss_2_and_more": 60,
+    "cvss_1_and_more": 90
+}
 ```
 
 ====Qualys Creds File====

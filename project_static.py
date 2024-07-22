@@ -67,15 +67,6 @@ qualys_api_url = '/api/2.0/fo/report/'
 qualys_reports_for_jira = dict()
 
 # JIRA API DATA
-# jira_data = f'{jira_files_dir}/jira-data.txt'
-# try:
-#     with open(jira_data, 'r', encoding='utf-8') as file:
-#         data = file.readlines()
-#         jira_url = data[2].strip()
-#         jira_coded_creds = data[4].strip()
-# except Exception as e:
-#     raise Exception(f'NO JIRA DATA FOUND,/n{e}/n exiting')
-
 jira_data = f'{jira_files_dir}/jira-data.json'
 try:
     with open(jira_data, 'r', encoding='utf-8') as file:

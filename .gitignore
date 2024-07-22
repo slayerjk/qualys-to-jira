@@ -11,6 +11,7 @@
 
 !app.py
 !project_static.py
+!one-dir_qualys-to-jira.spec
 
 !qualys-to-jira.py
 !qualys_files/BLANK_qualys-creds.txt
