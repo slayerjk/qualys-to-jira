@@ -67,12 +67,27 @@ qualys_api_url = '/api/2.0/fo/report/'
 qualys_reports_for_jira = dict()
 
 # JIRA API DATA
-jira_data = f'{jira_files_dir}/jira-data.txt'
+# jira_data = f'{jira_files_dir}/jira-data.txt'
+# try:
+#     with open(jira_data, 'r', encoding='utf-8') as file:
+#         data = file.readlines()
+#         jira_url = data[2].strip()
+#         jira_coded_creds = data[4].strip()
+# except Exception as e:
+#     raise Exception(f'NO JIRA DATA FOUND,/n{e}/n exiting')
+
+jira_data = f'{jira_files_dir}/jira-data.json'
 try:
     with open(jira_data, 'r', encoding='utf-8') as file:
-        data = file.readlines()
-        jira_url = data[2].strip()
-        jira_coded_creds = data[4].strip()
+        data = json.load(file)
+        jira_url = data['jira_url']
+        jira_coded_creds = data['jira_coded_creds']
+        jira_task_due_date = data['jira_task_due_date']
+        cvss_8_and_more = data['cvss_8_and_more']
+        cvss_6_and_more = data['cvss_6_and_more']
+        cvss_4_and_more = data['cvss_4_and_more']
+        cvss_2_and_more = data['cvss_2_and_more']
+        cvss_1_and_more = data['cvss_1_and_more']
 except Exception as e:
     raise Exception(f'NO JIRA DATA FOUND,/n{e}/n exiting')
 

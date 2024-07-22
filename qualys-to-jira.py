@@ -46,6 +46,12 @@ from project_static import (
     jira_api_url,
     jira_query_headers,
     jira_query_proxy,
+    jira_task_due_date,
+    cvss_8_and_more,
+    cvss_6_and_more,
+    cvss_4_and_more,
+    cvss_2_and_more,
+    cvss_1_and_more,
     smtp_port,
     smtp_server,
     from_addr,
@@ -286,6 +292,8 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
     logging.info('DONE: searching jira assignee from qualys report')
     logging.info(f'Jira assignee is: {jira_assignee}\n')
 
+    # No need to skip first 10(blank) rows in Windows
+    df = None
     if platform_system() != 'Windows':
         logging.info('STARTED: trying delete first 10 rows of csv header...')
         try:
@@ -381,8 +389,8 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
                     # 'CUSTOMFIELD_10200' STANDS FOR START DATE
                     temp_data['fields']['customfield_10200'] = str(jira_date_format)
                     temp_data['fields']['description'] = Associated_AGs
-                    temp_data['fields']['duedate'] = str(
-                            jira_date_format + timedelta(days=+90))
+                    # temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+90))
+                    temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+jira_task_due_date))
                     temp_data['fields']['priority']['name'] = 'Highest'
                     insert_data = dumps(temp_data, indent=4)
                     writer.write(insert_data)
@@ -454,25 +462,25 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
                 # CALCULATING PRIORITY AND DUEDATE
                 if int(re.findall(cvss_base_pattern, CVSS_Base)[0]) >= 8:
                     temp_data['fields']['priority']['name'] = 'Highest'
-                    temp_data['fields']['duedate'] = str(
-                        jira_date_format + timedelta(days=+15))
+                    # temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+15))
+                    temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+cvss_8_and_more))
                 elif int(re.findall(cvss_base_pattern, CVSS_Base)[0]) >= 6:
                     temp_data['fields']['priority']['name'] = 'High'
-                    temp_data['fields']['duedate'] = str(
-                        jira_date_format + timedelta(days=+30))
+                    # temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+30))
+                    temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+cvss_6_and_more))
                 elif int(re.findall(cvss_base_pattern, CVSS_Base)[0]) >= 4:
                     temp_data['fields']['priority']['name'] = 'Medium'
-                    temp_data['fields']['duedate'] = str(
-                        jira_date_format + timedelta(days=+45))
+                    # temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+45))
+                    temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+cvss_4_and_more))
                 elif int(re.findall(cvss_base_pattern, CVSS_Base)[0]) >= 2:
                     temp_data['fields']['priority']['name'] = 'Low'
-                    temp_data['fields']['duedate'] = str(
-                        jira_date_format + timedelta(days=+60))
+                    # temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+60))
+                    temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+cvss_2_and_more))
                 elif int(re.findall(cvss_base_pattern, CVSS_Base)[0]) >= 1:
                     temp_data['fields']['priority']['name'] = 'Lowest'
-                    temp_data['fields']['duedate'] = str(
-                        jira_date_format + timedelta(days=+90))
-                insert_data = dumps(temp_data, indent=4)
+                    # temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+90))
+                    temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+cvss_1_and_more))
+                    insert_data = dumps(temp_data, indent=4)
                 writer.write(insert_data)
                 writer.close()
                 # SEND JSON QUERY(SUB-TASK) TO JIRA API
