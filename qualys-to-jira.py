@@ -292,11 +292,11 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
     logging.info('DONE: searching jira assignee from qualys report')
     logging.info(f'Jira assignee is: {jira_assignee}\n')
 
-    # SKIP 20 ROWS OF DOWNLOADED CSV IF WINDOWS AND 10 FOR OTHER(LINUX)
+    # SKIP 17 ROWS OF DOWNLOADED CSV IF WINDOWS AND 10 FOR OTHER(LINUX)
     if platform_system() != 'Windows':
         csv_rows_to_skip = 10
     else:
-        csv_rows_to_skip = 20
+        csv_rows_to_skip = 17
 
     logging.info('STARTED: trying to read csv & delete first service rows of csv header...')
     try:
