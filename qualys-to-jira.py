@@ -196,7 +196,7 @@ try:
             logging.info(f'FOUND CSV REPORT FOR JIRA: {rep_id}:{rep_title}')
             user_report_temp.write(f'PROPER QUALYS REPORT FOUND: {rep_id}:{rep_title}\n')
             
-            logging.info(f'Checking Report id({rep_id}) has been processed')
+            logging.info(f'Checking if Report id({rep_id}) has been processed already')
             is_processed = False
             for val in list_qualys_last_processed_reports:
                 if int(rep_id) <= int(val):
@@ -292,17 +292,20 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
     logging.info('DONE: searching jira assignee from qualys report')
     logging.info(f'Jira assignee is: {jira_assignee}\n')
 
-    # No need to skip first 10(blank) rows in Windows
-    df = None
+    # SKIP 20 ROWS OF DOWNLOADED CSV IF WINDOWS AND 10 FOR OTHER(LINUX)
     if platform_system() != 'Windows':
-        logging.info('STARTED: trying delete first 10 rows of csv header...')
-        try:
-            df = read_csv(qualys_report, index_col='IP', skiprows=10)
-        except Exception as error:
-            logging.exception(f'FAILED: trying delete first 10 rows of csv header,\n{error}\nexiting...')
-            send_mail_report(*mail_settings, mail_type='error')
-            exit()
-        logging.info('DONE: trying delete first 10 rows of csv header...\n')
+        csv_rows_to_skip = 10
+    else:
+        csv_rows_to_skip = 20
+
+    logging.info('STARTED: trying to read csv & delete first service rows of csv header...')
+    try:
+        df = read_csv(qualys_report, index_col='IP', skiprows=csv_rows_to_skip)
+    except Exception as error:
+        logging.exception(f'FAILED: trying to read csv & delete first service rows of csv header,\n{error}\nexiting...')
+        send_mail_report(*mail_settings, mail_type='error')
+        exit()
+    logging.info('DONE: trying to read csv & delete first service rows of csv header...\n')
 
     logging.info('STARTED: writing downloaded CSV report modification')
     try:
