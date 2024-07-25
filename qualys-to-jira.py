@@ -264,7 +264,7 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
 
     # PERFORM API REQUEST
     resp = qualys_request_get_report.request(
-        qualys_api_url, qualys_get_report_params)
+        qualys_api_url, qualys_get_report_params, verify=False)
     # print(resp) # Raw text response from Qualys
 
     try:
@@ -300,7 +300,7 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
 
     logging.info('STARTED: trying to read csv & delete first service rows of csv header...')
     try:
-        df = read_csv(qualys_report, index_col='IP', skiprows=csv_rows_to_skip)
+        df = read_csv(qualys_report, index_col='IP', skiprows=csv_rows_to_skip, skip_blank_lines=True)
     except Exception as error:
         logging.exception(f'FAILED: trying to read csv & delete first service rows of csv header,\n{error}\nexiting...')
         send_mail_report(*mail_settings, mail_type='error')
@@ -320,6 +320,7 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
     logging.info('STARTED: PARSE CSV & ADD VALUES TO JIRA JSON TEMPLATE AND SEND IT TO JIRA\n')
 
     data = read_csv(qualys_report_ready)
+
     df = DataFrame(data, columns=[
             'IP',
             'DNS',
@@ -412,6 +413,7 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
                             headers=jira_query_headers,
                             proxies=jira_query_proxy
                         )
+
                     except Exception as error:
                         logging.exception(f'FAILED: Sending JSON data(TASK) to Jira API,\n{error}\nexiting...')
                         send_mail_report(*mail_settings, mail_type='error')
@@ -467,27 +469,24 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
                 # CALCULATING PRIORITY AND DUEDATE
                 if int(re.findall(cvss_base_pattern, CVSS_Base)[0]) >= 8:
                     temp_data['fields']['priority']['name'] = 'Highest'
-                    # temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+15))
                     temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+cvss_8_and_more_timedelta))
                 elif int(re.findall(cvss_base_pattern, CVSS_Base)[0]) >= 6:
                     temp_data['fields']['priority']['name'] = 'High'
-                    # temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+30))
                     temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+cvss_6_and_more_timedelta))
                 elif int(re.findall(cvss_base_pattern, CVSS_Base)[0]) >= 4:
                     temp_data['fields']['priority']['name'] = 'Medium'
-                    # temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+45))
                     temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+cvss_4_and_more_timedelta))
                 elif int(re.findall(cvss_base_pattern, CVSS_Base)[0]) >= 2:
                     temp_data['fields']['priority']['name'] = 'Low'
-                    # temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+60))
                     temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+cvss_2_and_more_timedelta))
                 elif int(re.findall(cvss_base_pattern, CVSS_Base)[0]) >= 1:
                     temp_data['fields']['priority']['name'] = 'Lowest'
-                    # temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+90))
                     temp_data['fields']['duedate'] = str(jira_date_format + timedelta(days=+cvss_1_and_more_timedelta))
-                    insert_data = dumps(temp_data, indent=4)
+
+                insert_data = dumps(temp_data, indent=4)
                 writer.write(insert_data)
                 writer.close()
+
                 # SEND JSON QUERY(SUB-TASK) TO JIRA API
                 logging.info('Sending JSON data(SUB-TASK) to Jira API...')
                 try:
