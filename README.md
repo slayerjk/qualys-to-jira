@@ -48,9 +48,11 @@ DON'T FORGET TO RENAME ALL CORRESPONDING "BLANK_" DATA FILES(REMOVE "BLANK_" PRE
 
 To get Jira Assignee(AD user), report MUST contain Asset Tags like: 
 ```
-Included(all): ALL domain controller, Assignee_ADUSER_;
+Included(all): Assignee_USERSAMACCOUNTNAME_, Project_JIRAPROJECTKEY;
 ```
-Script will search substring ADUSER in Assignee_ADUSER_.
+Script will search substring 'ADUSER' in 'Assignee_ADUSER_'
+and
+substring 'JIRAPROJECTKEY' in 'Project_JIRAPROJECTKEY';
 
 ====Jira Data File====
 
@@ -112,7 +114,7 @@ You'll have to change script body accordingly!
             "key": "<YOUR PROJECT KEY>"
         },
         "issuetype": {
-            "name": "Task"
+            "name": "<YOUR ISSUE TYPE>"
         },
         "summary": "<QUALYS REPORT COLUMNS IP + DNS - MUST BE EMPTY>",
         "assignee": {
@@ -150,11 +152,8 @@ You'll have to change script body accordingly!
         "project": {
             "key": "<YOUR PROJECT KEY>"
         },
-		"parent": {
-            "key": "<TASK KEY COUNTED BY SCRIPT - MUST BE EMPTY>"
-        },
         "issuetype": {
-            "name": "<YOUR SUBTASK NAME>"
+            "name": "<YOUR ISSUE TYPE>"
         },
         "summary": "<QUALYS REPORT COLUMN TITLE - MUST BE EMPTY>",
         "assignee": {
@@ -177,6 +176,7 @@ You'll have to change script body accordingly!
 	"customfield_11625": "<QUALYS REPORT COLUMN Solution - MUST BE EMPTY>",
 	"customfield_11626": "<QUALYS REPORT COLUMN Results - MUST BE EMPTY>",
 	"customfield_11627": "<QUALYS REPORT COLUMN PCI Vuln - MUST BE EMPTY>",
+	"customfield_10301": "<FIELD FOR PARENT(TASK/VULN)>",
         "customfield_10200": "<START DATE CUSTOM FIELD(SCRIPT START DATE) - MUST BE EMPTY>",
         "duedate": "<COUNTED BY SCRIPT - MUST BE EMPTY>",
         "description": "<QUALYS REPORT COLUMN Threat - MUST BE EMPTY>",

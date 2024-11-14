@@ -279,8 +279,14 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
     # MODULE: MODIFY CSV TO PARSE
 
     # SEARCH ASSIGNEE FOR JIRA TEMPLATES
+    # UPD_11.2024: need to parse report's Asset Tag both for Assignee(task,sub-task) & Project key(sub-task)
+    '''
+    Example of Asset Tag to parse: 
+    
+        Included(all): Assignee_GOLIKOVA_, Project_SYSADM;
+    '''
     logging.info(f'STARTED: searching jira assignee for report({cur_rep_id}:{cur_rep_title})')
-    jira_assignee_pattern = r'Assignee_(\w+)_'
+    jira_assignee_pattern = r'Assignee_([A-Z]+).*'
 
     with open(qualys_report, 'r', encoding='utf-8') as report:
         try:
@@ -291,6 +297,19 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
             exit()
     logging.info('DONE: searching jira assignee from qualys report')
     logging.info(f'Jira assignee is: {jira_assignee}\n')
+
+    # UPD_11.2024: need to parse report's Asset Tag both for Assignee(task,sub-task) & Project key(sub-task)
+    subtask_projectkey_pattern = r'Project_([A-Z]+).*'
+
+    with open(qualys_report, 'r', encoding='utf-8') as report:
+        try:
+            subtask_projectkey = str(re.findall(subtask_projectkey_pattern, report.read())[0]).upper()
+        except IndexError as e:
+            logging.exception('FAILED: searching project key from qualys report, exiting')
+            send_mail_report(*mail_settings, mail_type='error')
+            exit()
+    logging.info('DONE: searching project key from qualys report')
+    logging.info(f'Jira project key is: {subtask_projectkey}\n')
 
     # SKIP 17 ROWS OF DOWNLOADED CSV IF WINDOWS AND 10 FOR OTHER(LINUX)
     if platform_system() != 'Windows':
@@ -446,7 +465,13 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
             with (open(jira_query_subtask_template, 'r', encoding='utf_8_sig') as reader,
                   open(jira_query_file, 'w', encoding='utf_8_sig') as writer):
                 temp_data = loads(reader.read())
-                temp_data['fields']['parent']['key'] = task_parent_key
+
+                # UPD_11.2024: added project name to Sub-task
+                temp_data['fields']['project']['key'] = subtask_projectkey
+
+                # UPD_11.2024: parent key replaced with 'customfield_10301'
+                # temp_data['fields']['parent']['key'] = task_parent_key
+
                 temp_data['fields']['summary'] = Title
                 temp_data['fields']['assignee']['name'] = jira_assignee
                 temp_data['fields']['description'] = Threat
@@ -463,6 +488,10 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
                 temp_data['fields']['customfield_11625'] = Solution
                 temp_data['fields']['customfield_11626'] = Results
                 temp_data['fields']['customfield_11627'] = PCI_Vuln
+
+                # UPD_11.2024: task field for parent task
+                temp_data['fields']['customfield_10301'] = task_parent_key
+
                 # 'CUSTOMFIELD_10200' STANDS FOR START DATE
                 temp_data['fields']['customfield_10200'] = str(jira_date_format)
                 temp_data['fields']['description'] = Threat

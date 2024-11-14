@@ -3,11 +3,8 @@
         "project": {
             "key": "<your-project-key>"
         },
-		"parent": {
-            "key": ""
-        },
         "issuetype": {
-            "name": "Hole"
+            "name": "<your issuetype>"
         },
         "summary": "",
         "assignee": {
@@ -30,6 +27,7 @@
 		"customfield_11626": "",
 		"customfield_11627": "",
         "customfield_10200": "",
+        "customfield_10301": "",
         "duedate": "",
         "description": "",
         "priority": {

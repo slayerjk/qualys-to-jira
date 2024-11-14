@@ -4,7 +4,7 @@
             "key": "<your-project-key>"
         },
         "issuetype": {
-            "name": "Task"
+            "name": "<your issuetype>"
         },
         "summary": "",
         "assignee": {
