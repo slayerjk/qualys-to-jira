@@ -6,7 +6,7 @@ BEFORE START:
 ```
 Included(all): ALL domain controller, Assignee_ADUSER_;
 ```
-Script will search **ADUSER** substring in "**Assignee_ADUSER_**".
+Script will search **ADUSER** substring in "**Assignee_ADUSER**" and **JIRAPROJECTKEY** in **Project_JIRAPROJECTKEY** 
 
 1. You get archive, for example, qualys-to-jira.7z. Extract it to separate directory.
 2. Insise qualys-to-jira dir you'll find: 

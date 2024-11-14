@@ -52,7 +52,7 @@ Included(all): Assignee_USERSAMACCOUNTNAME_, Project_JIRAPROJECTKEY;
 ```
 Script will search substring 'ADUSER' in 'Assignee_ADUSER_'
 and
-substring 'JIRAPROJECTKEY' in 'Project_JIRAPROJECTKEY';
+substring 'JIRAPROJECTKEY' in 'Project_JIRAPROJECTKEY'
 
 ====Jira Data File====
 
