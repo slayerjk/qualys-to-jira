@@ -417,6 +417,10 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
                         jira_date_format + timedelta(days=+jira_task_due_date_timedelta)
                     )
                     temp_data['fields']['priority']['name'] = 'Highest'
+
+                    # UPD 15.01.25 customfield to fill required
+                    # temp_data['fields']['customfield_11203'] = 'IAS-1660915'
+
                     insert_data = dumps(temp_data, indent=4)
                     writer.write(insert_data)
                     writer.close()
