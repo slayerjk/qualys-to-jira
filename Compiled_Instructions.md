@@ -4,7 +4,7 @@ BEFORE START:
 1. Qualys **CSV** report name must exist and starts with "**JIRA_**" prefix
 2. To get Jira Assignee(AD user), report MUST contain **Asset Tags** like this: 
 ```
-Included(all): ALL domain controller, Assignee_ADUSER_;
+Included(all): Assignee_USERSAMACCOUNTNAME_, Project_JIRAPROJECTKEY;
 ```
 Script will search **ADUSER** substring in "**Assignee_ADUSER**" and **JIRAPROJECTKEY** in **Project_JIRAPROJECTKEY** 
 
