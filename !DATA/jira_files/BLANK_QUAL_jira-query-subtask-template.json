@@ -37,6 +37,11 @@
             {
                 "key": "<your-key-for-customfield>"
             }
-        ]
+        ],
+        "customfield_11203": [
+              {
+                  "key": "<your key>"
+              }
+          ]
     }
 }

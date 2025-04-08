@@ -23,6 +23,11 @@
             {
                 "key": "<your-custom-field-key>"
             }
-        ]
+        ],
+        "customfield_11203": [
+              {
+                  "key": "<your key>"
+              }
+          ]
     }
 }

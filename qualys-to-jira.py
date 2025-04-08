@@ -494,7 +494,6 @@ for cur_rep_id, cur_rep_title in qualys_reports_for_jira.items():
                 temp_data['fields']['customfield_11625'] = Solution
                 temp_data['fields']['customfield_11626'] = Results
                 temp_data['fields']['customfield_11627'] = PCI_Vuln
-                temp_data['fields']['customfield_12614'] = task_parent_key
 
                 # UPD_11.2024: task field for parent task
                 temp_data['fields']['customfield_10301'] = task_parent_key
