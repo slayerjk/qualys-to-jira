@@ -111,31 +111,37 @@ You'll have to change script body accordingly!
 {
     "fields": {
         "project": {
-            "key": "<YOUR PROJECT KEY>"
+            "key": "<your-project-key>"
         },
         "issuetype": {
-            "name": "<YOUR ISSUE TYPE>"
+            "name": "<your issuetype>"
         },
-        "summary": "<QUALYS REPORT COLUMNS IP + DNS - MUST BE EMPTY>",
+        "summary": "",
         "assignee": {
-            "name": "<YOUR DEFAULT ASSIGNEE>"
+            "name": ""
         },
-        "reporter": {
-            "name": "<YOUR-JIRA-USER-FOR-API>"
+				"reporter": {
+            "name": "<your-robot-user>"
         },
-        "customfield_10200": "<START DATE CUSTOM FIELD(SCRIPT START DATE) - MUST BE EMPTY>",
-        "duedate": "<COUNTED BY SCRIPT - MUST BE EMPTY>",
-        "description": "<QUALYS REPORT COLUMN ASSOCIATED_AGS - MUST BE EMPTY>",
+        "customfield_10200": "",
+        "duedate": "",
+        "description": "",
         "priority": {
-            "name": "Highest"
+            "name": ""
         },
         "customfield_11024": [
             {
-                "key": "<YOUR ETC STATIC CUSTOM FIELD - MY CASE = BUSINESS RELATED PROCESS>"
+                "key": "<your-custom-field-key>"
             }
-        ]
+        ],
+        "customfield_11203": [
+              {
+                  "key": "<your key>"
+              }
+          ]
     }
 }
+
 ```
 
 ====Jira JSON SUB-TASK Template====
@@ -150,46 +156,51 @@ You'll have to change script body accordingly!
 {
     "fields": {
         "project": {
-            "key": "<YOUR PROJECT KEY>"
+            "key": "<your-project-key>"
         },
         "issuetype": {
-            "name": "<YOUR ISSUE TYPE>"
+            "name": "<your issuetype>"
         },
-        "summary": "<QUALYS REPORT COLUMN TITLE - MUST BE EMPTY>",
+        "summary": "",
         "assignee": {
-            "name": "<YOUR DEFAULT ASSIGNEE>"
+            "name": ""
         },
-        "reporter": {
-            "name": "<YOUR-JIRA-USER-FOR-API>"
+		"reporter": {
+            "name": "<your-robot-user>"
         },
-	"customfield_11610": "<QUALYS REPORT COLUMN DNS - MUST BE EMPTY>",
-	"customfield_11616": "<QUALYS REPORT COLUMN OS - MUST BE EMPTY>",
-	"customfield_11612": "<QUALYS REPORT COLUMN QID - MUST BE EMPTY>",
-	"customfield_11617": "<QUALYS REPORT COLUMN Vuln Status - MUST BE EMPTY>",
-	"customfield_11615": "<QUALYS REPORT COLUMN Severity - MUST BE EMPTY>",
-	"customfield_11618": "<QUALYS REPORT COLUMN Port - MUST BE EMPTY>",
-	"customfield_11619": "<QUALYS REPORT COLUMN First Detected - MUST BE EMPTY>",
-	"customfield_11620": "<QUALYS REPORT COLUMN Last Detected - MUST BE EMPTY>",
-	"customfield_11621": "<QUALYS REPORT COLUMN CVE ID - MUST BE EMPTY>",
-	"customfield_11622": "<QUALYS REPORT COLUMN CVSS Base - MUST BE EMPTY>",
-	"customfield_11624": "<QUALYS REPORT COLUMN Impact - MUST BE EMPTY>",
-	"customfield_11625": "<QUALYS REPORT COLUMN Solution - MUST BE EMPTY>",
-	"customfield_11626": "<QUALYS REPORT COLUMN Results - MUST BE EMPTY>",
-	"customfield_11627": "<QUALYS REPORT COLUMN PCI Vuln - MUST BE EMPTY>",
-	"customfield_10301": "<FIELD FOR PARENT(TASK/VULN)>",
-        "customfield_10200": "<START DATE CUSTOM FIELD(SCRIPT START DATE) - MUST BE EMPTY>",
-        "duedate": "<COUNTED BY SCRIPT - MUST BE EMPTY>",
-        "description": "<QUALYS REPORT COLUMN Threat - MUST BE EMPTY>",
+		"customfield_11616": "",
+		"customfield_11612": "",
+		"customfield_11617": "",
+		"customfield_11615": "",
+		"customfield_11618": "",
+		"customfield_11619": "",
+		"customfield_11620": "",
+		"customfield_11621": "",
+		"customfield_11622": "",
+		"customfield_11624": "",
+		"customfield_11625": "",
+		"customfield_11626": "",
+		"customfield_11627": "",
+        "customfield_10200": "",
+        "customfield_10301": "",
+        "duedate": "",
+        "description": "",
         "priority": {
-            "name": "<COUNTED BY SCRIPT - MUST BE EMPTY>"
+            "name": ""
         },
         "customfield_11024": [
             {
-                "key": "<YOUR ETC STATIC CUSTOM FIELD - MY CASE = BUSINESS RELATED PROCESS>"
+                "key": "<your-key-for-customfield>"
             }
-        ]
+        ],
+        "customfield_11203": [
+              {
+                  "key": "<your key>"
+              }
+          ]
     }
 }
+
 ```
 
 ====project_static.py====
