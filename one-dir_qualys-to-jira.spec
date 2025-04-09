@@ -9,9 +9,9 @@ a = Analysis(
         ('!DATA/jira_files/jira-data.json', '!DATA/jira_files'),
         ('!DATA/jira_files/QUAL_jira-query-task-template.json', '!DATA/jira_files'),
         ('!DATA/jira_files/QUAL_jira-query-subtask-template.json', '!DATA/jira_files'),
-	('!DATA/data_files/mailing_data.json', '!DATA/data_files'),
-	('!DATA/qualys_files/qualys-creds.txt', '!DATA/qualys_files'),
-	('!DATA/qualys_files/qualys-last-processed-reports.txt', '!DATA/qualys_files')
+        ('!DATA/data_files/mailing_data.json', '!DATA/data_files'),
+        ('!DATA/qualys_files/qualys-creds.txt', '!DATA/qualys_files'),
+        ('!DATA/qualys_files/qualys-last-processed-reports.txt', '!DATA/qualys_files')
     ],
     hiddenimports=[],
     hookspath=[],
