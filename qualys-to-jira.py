@@ -180,7 +180,7 @@ try:
         try:
             list_qualys_last_processed_reports = [int(i.strip()) for i in rep_check_list.readlines()]
         except ValueError as e:
-            logging.exception('FAILED: forming last processed report list, not number in list, exiting...')
+            logging.exception('FAILED: forming last processed report list, not number in list, creating empty list')
             # send_mail_report(*mail_settings, mail_type='error')
             list_qualys_last_processed_reports = []
     logging.info('DONE: forming Qualys last processed report list')
