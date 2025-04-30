@@ -181,7 +181,7 @@ try:
             list_qualys_last_processed_reports = [int(i.strip()) for i in rep_check_list.readlines()]
         except ValueError as e:
             logging.exception('FAILED: forming last processed report list, not number in list, exiting...')
-            send_mail_report(*mail_settings, mail_type='error')
+            # send_mail_report(*mail_settings, mail_type='error')
             list_qualys_last_processed_reports = []
     logging.info('DONE: forming Qualys last processed report list')
     logging.info(f'Last processed reports is:\n{list_qualys_last_processed_reports}\n')        
@@ -198,6 +198,7 @@ try:
             
             logging.info(f'Checking if Report id({rep_id}) has been processed already')
             is_processed = False
+
             if len(list_qualys_last_processed_reports) != 0:
                 for val in list_qualys_last_processed_reports:
                     if int(rep_id) <= int(val):
@@ -205,6 +206,7 @@ try:
                         user_report_temp.write(f'{rep_id}:{rep_title} - HAS BEEN PROCESSED ALREADY\n\n')
                         is_processed = True
                         break
+
             if not is_processed:
                 logging.info(f'NEW REPORT FOR JIRA HAS FOUND: {rep_id}:{rep_title}\n')
                 user_report_temp.write(f'{rep_id}:{rep_title} - NEW REPORT TO PROCESS\n\n')
